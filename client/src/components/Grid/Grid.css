@@ -1,0 +1,50 @@
+.visualizer-canvas {
+    display: grid;
+    grid-template-rows: repeat(20, 20px); /* Adjust 20 for the number of rows */
+    grid-template-columns: repeat(50, 20px); /* Adjust 50 for the number of columns */
+    gap: 1px; /* Space between nodes */
+    justify-content: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.grid-row {
+    display: contents; /* Allows the parent grid layout to handle rows and columns */
+}
+
+.node {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+.node-wall {
+    background-color: black;
+}
+
+.node-start {
+    background-color: green;
+}
+
+.node-end {
+    background-color: red;
+}
+
+.node-visited {
+    background-color: lightblue;
+    transition: background-color 0.3s ease;
+}
+
+.node-path {
+    background-color: yellow;
+    transition: background-color 0.3s ease;
+}
+
+
+.node:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
