@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import ControlPanel from './components/ControlPanel';
 import Grid from './components/Grid/Grid';
@@ -12,22 +12,28 @@ function App() {
   const [grid, setGrid] = useState(createInitialGrid());
   const [statistics, setStatistics] = useState({ visitedNodes: 0, pathLength: null });
   const [noPathFound, setNoPathFound] = useState(false);
-  const [speed, setSpeed] = useState(50); // raw slider value (10–200)
+  const [speed, setSpeed] = useState(50);         // raw slider value (10–200)
+  const [steps, setSteps] = useState([]);         // BFS visits + path
+  const [stepIndex, setStepIndex] = useState(0);  // next step to process
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // refs for interval control
+  const intervalRef = useRef(null);
 
   // -- helpers --
 
-  // Reset flags on every node
+  // Clears all visit/path flags & previousNode references
   const clearGridVisualization = (g) => {
     g.forEach(row =>
       row.forEach(node => {
         node.isVisited = false;
-        node.isPath = false;
+        node.isPath    = false;
         node.previousNode = null;
       })
     );
   };
 
-  // Find the node with the given boolean prop (e.g. 'isStart' or 'isEnd')
+  // Finds the node in `g` with boolean prop `prop`
   const findNode = (g, prop) => {
     for (const row of g) {
       for (const node of row) {
@@ -37,16 +43,15 @@ function App() {
     return null;
   };
 
-  // -- handlers --
-
-  const handlePlay = () => {
-    // 1. Clone & clear previous visualization
+  // Build the steps array from BFS
+  const initializeSteps = () => {
+    // Clone & clear previous visualization
     const newGrid = grid.map(row => row.map(node => ({ ...node })));
     clearGridVisualization(newGrid);
     setGrid(newGrid);
     setNoPathFound(false);
 
-    // 2. Locate start/end
+    // Locate start/end
     const startNode = findNode(newGrid, 'isStart');
     const endNode   = findNode(newGrid, 'isEnd');
     if (!startNode || !endNode) {
@@ -54,52 +59,112 @@ function App() {
       return;
     }
 
-    // 3. Run BFS (no visualize callback; we’ll animate manually)
+    // Run BFS
     const { visitedNodes, path } = bfs(newGrid, startNode, endNode);
-
-    // 4. Update raw stats
     setStatistics({
       visitedNodes: visitedNodes.length,
       pathLength: path.length,
     });
 
-    // 5. Compute inverted delay: slider left=slow, right=fast
-    const MIN_DELAY = 10;
-    const MAX_DELAY = 200;
-    const delay = MAX_DELAY + MIN_DELAY - speed;
+    // Combine visits then path
+    const visitSteps = visitedNodes.map(node => ({ node, isPath: false }));
+    const pathSteps  = path       .map(node => ({ node, isPath: true  }));
+    const allSteps   = [...visitSteps, ...pathSteps];
 
-    // Animate visited nodes
-    visitedNodes.forEach((node, idx) => {
-      setTimeout(() => {
-        newGrid[node.row][node.col].isVisited = true;
-        setGrid([...newGrid]);
-      }, idx * delay);
-    });
+    setSteps(allSteps);
+    setStepIndex(0);
 
-    // 6. After all visited, animate path or show “no path” banner
-    setTimeout(() => {
-      if (path.length === 0) {
-        setNoPathFound(true);
-        return;
+    if (path.length === 0) {
+      setNoPathFound(true);
+    }
+  };
+
+  // Process a single step from `steps`
+  const processStep = () => {
+    setStepIndex(idx => {
+      if (idx >= steps.length) {
+        clearInterval(intervalRef.current);
+        setIsPlaying(false);
+        return idx;
       }
-      path.forEach((node, idx) => {
-        setTimeout(() => {
-          newGrid[node.row][node.col].isPath = true;
-          setGrid([...newGrid]);
-        }, idx * delay);
+      const { node, isPath } = steps[idx];
+      setGrid(g => {
+        const newG = g.map(row => row.map(n => ({ ...n })));
+        if (isPath) {
+          newG[node.row][node.col].isPath = true;
+        } else {
+          newG[node.row][node.col].isVisited = true;
+        }
+        return newG;
       });
-    }, visitedNodes.length * delay);
+      return idx + 1;
+    });
+  };
+
+  // -- handlers --
+
+  // Autoplay: initialize steps if needed, then start interval
+  const handlePlay = () => {
+    if (isPlaying) return;            // already playing
+    if (steps.length === 0) {
+      initializeSteps();
+      // slight delay to ensure `steps` state is set before starting
+      setTimeout(startInterval, 0);
+    } else {
+      startInterval();
+    }
+  };
+
+  // Pause autoplay
+  const handlePause = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      setIsPlaying(false);
+    }
+  };
+
+  // Manual step-by-step
+  const handleStep = () => {
+    if (steps.length === 0) {
+      initializeSteps();
+      return;
+    }
+    processStep();
+  };
+
+  // Start the interval based on current `speed`
+  const startInterval = () => {
+    const MIN_DELAY = 10, MAX_DELAY = 200;
+    const delay = MAX_DELAY + MIN_DELAY - speed;
+    intervalRef.current = setInterval(processStep, delay);
+    setIsPlaying(true);
   };
 
   const handleReset = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setGrid(createInitialGrid());
     setStatistics({ visitedNodes: 0, pathLength: null });
     setNoPathFound(false);
+    setSteps([]);
+    setStepIndex(0);
+    setIsPlaying(false);
   };
 
   const handleSpeedChange = (e) => {
     setSpeed(Number(e.target.value));
+    // if playing, restart interval with new speed
+    if (isPlaying) {
+      clearInterval(intervalRef.current);
+      startInterval();
+    }
   };
+
+  // Clear on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   // -- render --
   return (
@@ -114,8 +179,8 @@ function App() {
 
       <ControlPanel
         onPlay={handlePlay}
-        onPause={() => {}}
-        onStep={() => {}}
+        onPause={handlePause}
+        onStep={handleStep}
         onReset={handleReset}
         onSpeedChange={handleSpeedChange}
         onAlgorithmChange={() => {}}
