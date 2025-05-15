@@ -6,6 +6,7 @@ function ControlPanel({
   onPlay,
   onPause,
   onStep,
+  onBack,
   onReset,
   onSpeedChange,
   onAlgorithmChange,
@@ -17,10 +18,10 @@ function ControlPanel({
       <button onClick={onPlay}>Play</button>
       <button onClick={onPause}>Pause</button>
       <button onClick={onStep}>Step</button>
+      <button onClick={onBack}>Back</button>
       <button onClick={onReset}>Reset</button>
 
-      <label className="control-panel__slider">
-        Speed:&nbsp;
+      <div className="control-panel__slider">
         <input
           type="range"
           min="10"
@@ -28,18 +29,22 @@ function ControlPanel({
           value={speed}
           onChange={onSpeedChange}
         />
-        &nbsp;{speed} ms
-      </label>
+        <span>{speed} ms</span>
+      </div>
 
-      <label className="control-panel__dropdown">
-        Algorithm:&nbsp;
-        <select onChange={onAlgorithmChange} defaultValue="bfs">
-          <option value="bfs">BFS</option>
-          <option value="dfs">DFS</option>
-          <option value="dijkstra">Dijkstra</option>
-          <option value="astar">A*</option>
-        </select>
+      <label className="control-panel__dropdown" htmlFor="algo-select">
+        Algorithm
       </label>
+      <select
+        id="algo-select"
+        onChange={onAlgorithmChange}
+        defaultValue="bfs"
+      >
+        <option value="bfs">BFS</option>
+        <option value="dfs">DFS</option>
+        <option value="dijkstra">Dijkstra</option>
+        <option value="astar">A*</option>
+      </select>
 
       <div className="control-panel__stats">
         <span>Visited: {statistics.visitedNodes}</span>
