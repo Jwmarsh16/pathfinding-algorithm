@@ -3,11 +3,11 @@
 .visualizer-canvas {
   display: grid;
   /* 50 columns, each 1fr but no smaller than 12px */
-  grid-template-columns: repeat(50, minmax(12px, 1fr));
+  grid-template-columns: repeat(50, minmax(16px, 1fr));
   gap: 1px;
 
   /* fill wrapper but respect its max-width */
-  width: 70%;
+  width: 100%;
   box-sizing: border-box;
 
   background-color: #f0f0f0;

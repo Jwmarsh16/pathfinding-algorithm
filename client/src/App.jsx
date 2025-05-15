@@ -12,7 +12,7 @@ function App() {
   const [grid, setGrid] = useState(createInitialGrid());
   const [statistics, setStatistics] = useState({ visitedNodes: 0, pathLength: null });
   const [noPathFound, setNoPathFound] = useState(false);
-  const [speed, setSpeed] = useState(50); // ms per node visualization
+  const [speed, setSpeed] = useState(50); // raw slider value (10–200)
 
   // -- helpers --
 
@@ -63,12 +63,17 @@ function App() {
       pathLength: path.length,
     });
 
-    // 5. Animate visited nodes
+    // 5. Compute inverted delay: slider left=slow, right=fast
+    const MIN_DELAY = 10;
+    const MAX_DELAY = 200;
+    const delay = MAX_DELAY + MIN_DELAY - speed;
+
+    // Animate visited nodes
     visitedNodes.forEach((node, idx) => {
       setTimeout(() => {
         newGrid[node.row][node.col].isVisited = true;
-        setGrid(g => [...newGrid]);
-      }, idx * speed);
+        setGrid([...newGrid]);
+      }, idx * delay);
     });
 
     // 6. After all visited, animate path or show “no path” banner
@@ -80,10 +85,10 @@ function App() {
       path.forEach((node, idx) => {
         setTimeout(() => {
           newGrid[node.row][node.col].isPath = true;
-          setGrid(g => [...newGrid]);
-        }, idx * speed);
+          setGrid([...newGrid]);
+        }, idx * delay);
       });
-    }, visitedNodes.length * speed);
+    }, visitedNodes.length * delay);
   };
 
   const handleReset = () => {
@@ -110,18 +115,21 @@ function App() {
       <ControlPanel
         onPlay={handlePlay}
         onPause={() => {}}
-        onReset={handleReset}
         onStep={() => {}}
+        onReset={handleReset}
         onSpeedChange={handleSpeedChange}
         onAlgorithmChange={() => {}}
+        speed={speed}
         statistics={statistics}
       />
 
-      <Grid
-        grid={grid}
-        setGrid={setGrid}
-        triggerAlgorithm={handlePlay}
-      />
+      <div className="grid-wrapper">
+        <Grid
+          grid={grid}
+          setGrid={setGrid}
+          triggerAlgorithm={handlePlay}
+        />
+      </div>
 
       <Footer
         visitedNodes={statistics.visitedNodes}

@@ -1,0 +1,66 @@
+/* src/components/ControlPanel.css */
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0.5rem auto;
+  box-sizing: border-box;
+}
+
+.control-panel button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #4caf50;
+  background-color: #4caf50;
+  color: #ffffff;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.control-panel button:hover {
+  background-color: #45a047;
+}
+
+/* Make the speed slider label and track more visible */
+.control-panel__slider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.control-panel__slider input[type="range"] {
+  width: 140px;
+  cursor: pointer;
+  /* modern browsers support accent-color to tint the slider */
+  accent-color: #4caf50;
+}
+
+/* Dropdown styling */
+.control-panel__dropdown {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+.control-panel__dropdown select {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Stats on the right */
+.control-panel__stats {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
