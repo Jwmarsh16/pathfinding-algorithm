@@ -143,7 +143,6 @@ function Grid({ grid, setGrid }) {
                     <option value="smallMaze">Small Maze</option>
                     <option value="diagonalWalls">Diagonal Walls</option>
                 </select>
-                <button onClick={triggerBFS}>Run Algorithm</button>
             </div>
             <div
                 className="visualizer-canvas"
