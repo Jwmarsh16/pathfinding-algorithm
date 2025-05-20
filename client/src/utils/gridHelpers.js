@@ -1,16 +1,20 @@
 // src/utils/gridHelpers.js
+import {
+  GRID_ROWS,
+  GRID_COLS,
+  START_NODE,
+  END_NODE
+} from '../config';
 
 /**
  * Create a new grid of nodes.
- * @param {number} rows - Number of rows (default 20)
- * @param {number} cols - Number of columns (default 50)
  * @returns {Object[][]} grid
  */
-function createInitialGrid(rows = 20, cols = 50) {
+function createInitialGrid() {
   const grid = [];
-  for (let row = 0; row < rows; row++) {
+  for (let row = 0; row < GRID_ROWS; row++) {
     const currentRow = [];
-    for (let col = 0; col < cols; col++) {
+    for (let col = 0; col < GRID_COLS; col++) {
       currentRow.push(createNode(row, col));
     }
     grid.push(currentRow);
@@ -28,8 +32,8 @@ function createNode(row, col) {
   return {
     row,
     col,
-    isStart: row === 10 && col === 5,
-    isEnd:   row === 10 && col === 45,
+    isStart: row === START_NODE.row && col === START_NODE.col,
+    isEnd:   row === END_NODE.row   && col === END_NODE.col,
     isWall:  false,
     isVisited: false,
     isPath:    false,

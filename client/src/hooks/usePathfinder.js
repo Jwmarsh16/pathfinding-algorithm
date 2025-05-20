@@ -1,4 +1,5 @@
 // src/hooks/usePathfinder.js
+
 import { useState, useRef, useEffect } from 'react';
 import bfs from '../algorithms/bfs';
 import {
@@ -6,36 +7,46 @@ import {
   clearGridVisualization,
   findNode
 } from '../utils/gridHelpers';
+import {
+  computeAnimationDelay,
+  startAnimationInterval,
+  restartAnimationInterval
+} from '../utils/animationHelpers';
+import { DEFAULT_SPEED } from '../config';
 
-function usePathfinder() {
-  // grid + visualization flags
+export default function usePathfinder() {
+  // ─── State ──────────────────────────────────────────────────────────────
   const [grid, setGrid]               = useState(createInitialGrid());
   const [statistics, setStatistics]   = useState({ visitedNodes: 0, pathLength: null });
   const [noPathFound, setNoPathFound] = useState(false);
 
-  // speed & playback
-  const [speed, setSpeed]       = useState(50);        // raw slider value (10–200)
+  const [speed, setSpeed]       = useState(DEFAULT_SPEED);
   const [isPlaying, setIsPlaying] = useState(false);
-  const intervalRef = useRef(null);
+  const intervalRef             = useRef(null);
 
-  // step-by-step
   const [steps, setSteps]         = useState([]);
   const [stepIndex, setStepIndex] = useState(0);
 
-  // Build the full sequence of visit + path steps
+  // ─── Helpers ────────────────────────────────────────────────────────────
+
+  // 1) Build the step sequence from BFS
   function initializeSteps() {
+    // clone current grid and clear any previous marks
     const newGrid = grid.map(r => r.map(n => ({ ...n })));
     clearGridVisualization(newGrid);
     setGrid(newGrid);
     setNoPathFound(false);
 
+    // locate start & end
     const start = findNode(newGrid, 'isStart');
     const end   = findNode(newGrid, 'isEnd');
     if (!start || !end) return;
 
+    // run BFS
     const { visitedNodes, path } = bfs(newGrid, start, end);
     setStatistics({ visitedNodes: visitedNodes.length, pathLength: path.length });
 
+    // assemble steps
     const visitSteps = visitedNodes.map(node => ({ node, isPath: false }));
     const pathSteps  = path       .map(node => ({ node, isPath: true  }));
     setSteps([...visitSteps, ...pathSteps]);
@@ -44,7 +55,7 @@ function usePathfinder() {
     if (path.length === 0) setNoPathFound(true);
   }
 
-  // process one step
+  // 2) Process exactly one step
   function processStep() {
     setStepIndex(idx => {
       if (idx >= steps.length) {
@@ -54,29 +65,30 @@ function usePathfinder() {
       }
       const { node, isPath } = steps[idx];
       setGrid(g => {
-        const newG = g.map(row => row.map(n => ({ ...n })));
+        // clone & mark this node
+        const newG = g.map(r => r.map(n => ({ ...n })));
         if (isPath) newG[node.row][node.col].isPath = true;
-        else       newG[node.row][node.col].isVisited = true;
+        else        newG[node.row][node.col].isVisited = true;
         return newG;
       });
       return idx + 1;
     });
   }
 
-  // start/resume interval
+  // 3) Kick off an interval for autoplay
   function startInterval() {
-    const MIN_DELAY = 10, MAX_DELAY = 200;
-    const delay = MAX_DELAY + MIN_DELAY - speed;
-    intervalRef.current = setInterval(processStep, delay);
+    const id = startAnimationInterval(processStep, speed);
+    intervalRef.current = id;
     setIsPlaying(true);
   }
 
-  // Handlers exposed to App
+  // ─── Handlers ────────────────────────────────────────────────────────────
+
   function play() {
     if (isPlaying) return;
     if (steps.length === 0) {
       initializeSteps();
-      // schedule interval after state has updated
+      // let React flush state, then start
       setTimeout(startInterval, 0);
     } else {
       startInterval();
@@ -119,17 +131,21 @@ function usePathfinder() {
     setIsPlaying(false);
   }
 
-  function changeSpeed(e) {
-    const val = Number(e.target.value);
+  function changeSpeed(event) {
+    const val = Number(event.target.value);
     setSpeed(val);
     if (isPlaying) {
-      clearInterval(intervalRef.current);
-      startInterval();
+      restartAnimationInterval(intervalRef, processStep, val);
     }
   }
 
-  // cleanup on unmount
-  useEffect(() => () => clearInterval(intervalRef.current), []);
+  // ─── Cleanup ─────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  // ─── API ─────────────────────────────────────────────────────────────────
 
   return {
     grid,
@@ -143,8 +159,6 @@ function usePathfinder() {
     step,
     back,
     reset,
-    changeSpeed
+    changeSpeed,
   };
 }
-
-export default usePathfinder;
