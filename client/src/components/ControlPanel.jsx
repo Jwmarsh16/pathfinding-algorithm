@@ -1,6 +1,6 @@
 // src/components/ControlPanel.jsx
-import React from 'react';
-import './ControlPanel.css';
+import React from 'react'
+import './ControlPanel.css'
 
 function ControlPanel({
   onPlay,
@@ -15,11 +15,21 @@ function ControlPanel({
 }) {
   return (
     <div className="control-panel">
-      <button onClick={onPlay}>Play</button>
-      <button onClick={onPause}>Pause</button>
-      <button onClick={onStep}>Step</button>
-      <button onClick={onBack}>Back</button>
-      <button onClick={onReset}>Reset</button>
+      <button type="button" onClick={() => { console.log('▶️ Play clicked'); onPlay() }}>
+        Play
+      </button>
+      <button type="button" onClick={() => { console.log('⏸️ Pause clicked'); onPause() }}>
+        Pause
+      </button>
+      <button type="button" onClick={() => { console.log('⏭️ Step clicked'); onStep() }}>
+        Step
+      </button>
+      <button type="button" onClick={() => { console.log('⏮️ Back clicked'); onBack() }}>
+        Back
+      </button>
+      <button type="button" onClick={() => { console.log('🔄 Reset clicked'); onReset() }}>
+        Reset
+      </button>
 
       <div className="control-panel__slider">
         <input
@@ -27,7 +37,7 @@ function ControlPanel({
           min="10"
           max="200"
           value={speed}
-          onChange={onSpeedChange}
+          onChange={e => { console.log('🎚️ Speed:', e.target.value); onSpeedChange(e) }}
         />
         <span>{speed} ms</span>
       </div>
@@ -37,8 +47,8 @@ function ControlPanel({
       </label>
       <select
         id="algo-select"
-        onChange={onAlgorithmChange}
         defaultValue="bfs"
+        onChange={e => { console.log('🔀 Algo:', e.target.value); onAlgorithmChange(e) }}
       >
         <option value="bfs">BFS</option>
         <option value="dfs">DFS</option>
@@ -51,7 +61,7 @@ function ControlPanel({
         <span>Path: {statistics.pathLength ?? '–'}</span>
       </div>
     </div>
-  );
+  )
 }
 
-export default ControlPanel;
+export default ControlPanel
