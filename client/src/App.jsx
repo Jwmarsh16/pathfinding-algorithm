@@ -64,7 +64,6 @@ function App() {
       <div className="grid-wrapper">
         <Grid
           grid={grid}
-          setGrid={newGrid => dispatch({ type: 'pathfinder/setGrid', payload: newGrid })}
         />
       </div>
 
