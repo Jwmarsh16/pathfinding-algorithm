@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import bfs from '../algorithms/bfs'
 import dfs from '../algorithms/dfs'
-//import dijkstra from '../algorithms/dijkstra'
+import dijkstra from '../algorithms/dijkstra'
 //import astar from '../algorithms/astar'
 import {
   createInitialGrid,
