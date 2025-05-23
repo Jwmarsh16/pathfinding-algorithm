@@ -156,6 +156,24 @@ const pathfinderSlice = createSlice({
     setGrid(state, action) {
       state.grid = action.payload
     },
+    toggleWall(state, action) {
+      const { row, col } = action.payload
+      const node = state.grid[row][col]
+      node.isWall = !node.isWall
+    },
+    moveStart(state, action) {
+      const { row, col } = action.payload
+      state.grid.forEach(r => r.forEach(n => { n.isStart = false }))
+      state.grid[row][col].isStart = true
+    },
+    moveEnd(state, action) {
+      const { row, col } = action.payload
+      state.grid.forEach(r => r.forEach(n => { n.isEnd = false }))
+      state.grid[row][col].isEnd = true
+    },
+    loadPreset(state, action) {
+      state.grid = action.payload
+    },
     setSteps(state, action) {
       state.steps = action.payload
     },
@@ -206,6 +224,10 @@ const pathfinderSlice = createSlice({
 
 export const {
   setGrid,
+  toggleWall,
+  moveStart,
+  moveEnd,
+  loadPreset,
   setSteps,
   setStepIndex,
   setIsPlaying,

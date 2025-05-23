@@ -1,14 +1,17 @@
 // src/components/Grid/Grid.jsx
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import {
+  toggleWall,
+  moveStart,
+  moveEnd,
+  loadPreset
+} from '../../store/pathfinderSlice'
 import Node from './Node'
 import './Grid.css'
 
-// helper to deep‐clone grid + nodes
-function cloneGrid(grid) {
-  return grid.map(row => row.map(node => ({ ...node })))
-}
-
-function Grid({ grid, setGrid }) {
+function Grid({ grid }) {
+  const dispatch = useDispatch()
   const [isMousePressed, setIsMousePressed]         = useState(false)
   const [isStartNodeDragged, setIsStartNodeDragged] = useState(false)
   const [isEndNodeDragged, setIsEndNodeDragged]     = useState(false)
@@ -21,36 +24,29 @@ function Grid({ grid, setGrid }) {
   }
 
   const handleMouseDown = (row, col) => {
-    const newGrid = cloneGrid(grid)
-    const node    = newGrid[row][col]
+    const node = grid[row][col]
 
     if (node.isStart) {
       setIsStartNodeDragged(true)
     } else if (node.isEnd) {
       setIsEndNodeDragged(true)
     } else {
-      node.isWall = !node.isWall
+      dispatch(toggleWall({ row, col }))
     }
 
-    setGrid(newGrid)
     setIsMousePressed(true)
   }
 
   const handleMouseEnter = (row, col) => {
     if (!isMousePressed) return
 
-    const newGrid = cloneGrid(grid)
-    const node    = newGrid[row][col]
-
     if (isStartNodeDragged) {
-      moveNode(newGrid, 'isStart', row, col)
+      dispatch(moveStart({ row, col }))
     } else if (isEndNodeDragged) {
-      moveNode(newGrid, 'isEnd', row, col)
+      dispatch(moveEnd({ row, col }))
     } else {
-      node.isWall = true
+      dispatch(toggleWall({ row, col }))
     }
-
-    setGrid(newGrid)
   }
 
   const handleMouseUp = () => {
@@ -59,20 +55,10 @@ function Grid({ grid, setGrid }) {
     setIsEndNodeDragged(false)
   }
 
-  const moveNode = (grid, nodeType, row, col) => {
-    for (const rowArr of grid) {
-      for (const n of rowArr) {
-        if (n[nodeType]) {
-          n[nodeType] = false
-        }
-      }
-    }
-    grid[row][col][nodeType] = true
-  }
-
   const loadPredefinedGrid = (type) => {
-    if (predefinedGrids[type]) {
-      setGrid(predefinedGrids[type]())
+    const factory = predefinedGrids[type]
+    if (factory) {
+      dispatch(loadPreset(factory()))
     }
   }
 
@@ -80,7 +66,7 @@ function Grid({ grid, setGrid }) {
     <div>
       <div className="grid-controls">
         <select
-          onChange={(e) => loadPredefinedGrid(e.target.value)}
+          onChange={e => loadPredefinedGrid(e.target.value)}
           defaultValue=""
         >
           <option value="" disabled>
@@ -96,9 +82,9 @@ function Grid({ grid, setGrid }) {
         className="visualizer-canvas"
         onMouseLeave={handleMouseUp}
       >
-        {grid.map((row, rowIndex) => (
+        {grid.map((rowArr, rowIndex) => (
           <div key={rowIndex} className="grid-row">
-            {row.map((node, colIndex) => (
+            {rowArr.map((node, colIndex) => (
               <Node
                 key={`${rowIndex}-${colIndex}`}
                 node={node}
