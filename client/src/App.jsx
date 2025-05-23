@@ -15,7 +15,8 @@ import {
   pause,
   back,
   resetAll,
-  setSpeed
+  setSpeed,
+  setAlgorithm
 } from './store/pathfinderSlice'
 
 function App() {
@@ -25,17 +26,14 @@ function App() {
     statistics,
     noPathFound,
     speed,
-    steps  // grab steps array to know if we’ve initialized yet
+    steps,
+    selectedAlgorithm
   } = useSelector(state => state.pathfinder)
 
   const handleStep = () => {
     if (steps.length === 0) {
-      // first step ever: build the steps then do one
-      dispatch(initializeSteps()).then(() => {
-        dispatch(processStep())
-      })
+      dispatch(initializeSteps()).then(() => dispatch(processStep()))
     } else {
-      // already have a steps array: just do one more
       dispatch(processStep())
     }
   }
@@ -53,10 +51,12 @@ function App() {
       <ControlPanel
         onPlay={() => dispatch(play())}
         onPause={() => dispatch(pause())}
-        onStep={handleStep}         /* <- use our new handler */
+        onStep={handleStep}
         onBack={() => dispatch(back())}
         onReset={() => dispatch(resetAll())}
         onSpeedChange={e => dispatch(setSpeed(Number(e.target.value)))}
+        selectedAlgorithm={selectedAlgorithm}
+        onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}
         speed={speed}
         statistics={statistics}
       />

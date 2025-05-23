@@ -17,7 +17,9 @@ let intervalId = null
 export const initializeSteps = createAsyncThunk(
   'pathfinder/initializeSteps',
   async (_, { getState, dispatch }) => {
-    const stateGrid = getState().pathfinder.grid
+    const state = getState().pathfinder
+    const stateGrid = state.grid
+    const algo = state.selectedAlgorithm
 
     // 1) Clone & clear visualization on the clone
     const newGrid = stateGrid.map(row => row.map(n => ({ ...n })))
@@ -28,8 +30,26 @@ export const initializeSteps = createAsyncThunk(
     const end   = findNode(newGrid, 'isEnd')
     if (!start || !end) return
 
-    // 3) Run BFS on that clone (still mutable)
-    const { visitedNodes, path } = bfs(newGrid, start, end)
+    // 3) Run the selected algorithm on that clone (still mutable)
+    let result
+    switch (algo) {
+      case 'dfs':
+        // you'll implement dfs.js later
+        result = dfs(newGrid, start, end)
+        break
+      case 'dijkstra':
+        // you'll implement dijkstra.js later
+        result = dijkstra(newGrid, start, end)
+        break
+      case 'astar':
+        // you'll implement astar.js later
+        result = astar(newGrid, start, end)
+        break
+      case 'bfs':
+      default:
+        result = bfs(newGrid, start, end)
+    }
+    const { visitedNodes, path } = result
 
     // 4) Commit grid & flags to Redux (now frozen)
     dispatch(setGrid(newGrid))
@@ -68,7 +88,6 @@ export const pause = createAsyncThunk(
   'pathfinder/pause',
   async (_, { dispatch }) => {
     if (intervalId) clearInterval(intervalId)
-    // THIS LINE lets you play again
     dispatch(setIsPlaying(false))
   }
 )
@@ -127,13 +146,14 @@ export const stepOnce = createAsyncThunk(
 const pathfinderSlice = createSlice({
   name: 'pathfinder',
   initialState: {
-    grid:         createInitialGrid(),
-    steps:        [],
-    stepIndex:    0,
-    isPlaying:    false,
-    speed:        DEFAULT_SPEED,
-    statistics:   { visitedNodes: 0, pathLength: null },
-    noPathFound:  false
+    grid:              createInitialGrid(),
+    steps:             [],
+    stepIndex:         0,
+    isPlaying:         false,
+    speed:             DEFAULT_SPEED,
+    statistics:        { visitedNodes: 0, pathLength: null },
+    noPathFound:       false,
+    selectedAlgorithm: 'bfs'               // ← new
   },
   reducers: {
     setGrid(state, action) {
@@ -157,6 +177,9 @@ const pathfinderSlice = createSlice({
     setNoPathFound(state, action) {
       state.noPathFound = action.payload
     },
+    setAlgorithm(state, action) {        // ← new
+      state.selectedAlgorithm = action.payload
+    },
     markNode(state, action) {
       const { node, isPath } = action.payload
       const { row, col } = node
@@ -170,13 +193,14 @@ const pathfinderSlice = createSlice({
       else        state.grid[row][col].isVisited = false
     },
     resetState(state) {
-      state.grid        = createInitialGrid()
-      state.steps       = []
-      state.stepIndex   = 0
-      state.isPlaying   = false
-      state.speed       = DEFAULT_SPEED
-      state.statistics  = { visitedNodes: 0, pathLength: null }
-      state.noPathFound = false
+      state.grid              = createInitialGrid()
+      state.steps             = []
+      state.stepIndex         = 0
+      state.isPlaying         = false
+      state.speed             = DEFAULT_SPEED
+      state.statistics        = { visitedNodes: 0, pathLength: null }
+      state.noPathFound       = false
+      state.selectedAlgorithm = 'bfs'       // ← reset to default
     }
   }
 })
@@ -192,6 +216,7 @@ export const {
   setSpeed,
   setStatistics,
   setNoPathFound,
+  setAlgorithm,     // ← new
   markNode,
   unmarkNode,
   resetState

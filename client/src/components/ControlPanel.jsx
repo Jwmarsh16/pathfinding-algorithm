@@ -10,6 +10,7 @@ function ControlPanel({
   onReset,
   onSpeedChange,
   onAlgorithmChange,
+  selectedAlgorithm,   // ← new prop
   speed,
   statistics
 }) {
@@ -47,8 +48,11 @@ function ControlPanel({
       </label>
       <select
         id="algo-select"
-        defaultValue="bfs"
-        onChange={e => { console.log('🔀 Algo:', e.target.value); onAlgorithmChange(e) }}
+        value={selectedAlgorithm}
+        onChange={e => {
+          console.log('🔀 Algo:', e.target.value)
+          onAlgorithmChange(e.target.value)
+        }}
       >
         <option value="bfs">BFS</option>
         <option value="dfs">DFS</option>
