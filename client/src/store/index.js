@@ -8,9 +8,9 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      // ⚠️ Disable these two checks for faster development performance
       immutableCheck: false,
       serializableCheck: false
     }),
-  devTools: process.env.NODE_ENV !== 'production'
+  // ⚠️ completely disable Redux DevTools
+  devTools: false
 })
