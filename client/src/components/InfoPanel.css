@@ -1,0 +1,25 @@
+.info-panel {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.info-panel__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.info-panel__desc {
+  margin: 0 0 0.75rem;
+  color: #555;
+}
+
+.info-panel__complexities {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: #444;
+}

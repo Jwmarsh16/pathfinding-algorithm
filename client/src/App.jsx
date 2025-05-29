@@ -1,8 +1,8 @@
-// src/App.jsx
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
 import ControlPanel from './components/ControlPanel'
+import InfoPanel from './components/InfoPanel'
 import Grid from './components/Grid/Grid'
 import Footer from './components/Footer'
 import './styles/global.css'
@@ -61,10 +61,10 @@ function App() {
         statistics={statistics}
       />
 
+      <InfoPanel selectedAlgorithm={selectedAlgorithm} />
+
       <div className="grid-wrapper">
-        <Grid
-          grid={grid}
-        />
+        <Grid grid={grid} />
       </div>
 
       <Footer
