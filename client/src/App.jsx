@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
 import ControlPanel from './components/ControlPanel'
 import InfoPanel from './components/InfoPanel'
+import HelpModal from './components/HelpModal'
 import Grid from './components/Grid/Grid'
 import Footer from './components/Footer'
 import './styles/global.css'
@@ -29,6 +30,8 @@ function App() {
     steps,
     selectedAlgorithm
   } = useSelector(state => state.pathfinder)
+
+  const [helpOpen, setHelpOpen] = useState(false)
 
   const handleStep = () => {
     if (steps.length === 0) {
@@ -61,7 +64,18 @@ function App() {
         statistics={statistics}
       />
 
+      <button
+        type="button"
+        className="help-button"
+        onClick={() => setHelpOpen(true)}
+        style={{ margin: '0.5rem', padding: '0.5rem 1rem' }}
+      >
+        Help
+      </button>
+
       <InfoPanel selectedAlgorithm={selectedAlgorithm} />
+
+      <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <div className="grid-wrapper">
         <Grid grid={grid} />
