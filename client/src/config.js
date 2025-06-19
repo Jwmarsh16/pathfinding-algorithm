@@ -1,13 +1,15 @@
 // src/config.js
+// ─── Global configuration constants ────────────────────────────────────────
 
-/**
- * Core configuration for Algorithm Visualizer
- */
-export const GRID_ROWS      = 20;
-export const GRID_COLS      = 50;
-export const START_NODE     = { row: 10, col: 5 };
-export const END_NODE       = { row: 10, col: 45 };
+// Grid dimensions
+export const GRID_ROWS = 20
+export const GRID_COLS = 50
 
-export const SPEED_MIN      = 10;  // slider raw min
-export const SPEED_MAX      = 200; // slider raw max
-export const DEFAULT_SPEED  = 50;  // initial slider value
+// Default start/end locations
+export const START_NODE = { row: 10, col: 5 }
+export const END_NODE   = { row: 10, col: 45 }
+
+// Animation speed (in milliseconds per step)
+export const SPEED_MIN     = 1    // ← floor of 1 ms for maximum speed
+export const SPEED_MAX     = 200
+export const DEFAULT_SPEED = 50

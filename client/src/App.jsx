@@ -16,11 +16,10 @@ import {
   play,
   pause,
   back,
-  setSpeed,
-  setAlgorithm,
-  // ─── NEW: import the two reset thunks
   resetGridThunk,
-  resetPathThunk
+  resetPathThunk,
+  changeSpeed,        // ← new thunk
+  setAlgorithm
 } from './store/pathfinderSlice'
 
 function App() {
@@ -59,10 +58,10 @@ function App() {
         onPause={() => dispatch(pause())}
         onStep={handleStep}
         onBack={() => dispatch(back())}
-        // ─── UPDATED: replaced single onReset with two separate handlers
         onResetGrid={() => dispatch(resetGridThunk())}
         onResetPath={() => dispatch(resetPathThunk())}
-        onSpeedChange={e => dispatch(setSpeed(Number(e.target.value)))}
+        // ─── UPDATED: use changeSpeed thunk for live speed changes
+        onSpeedChange={e => dispatch(changeSpeed(Number(e.target.value)))}
         selectedAlgorithm={selectedAlgorithm}
         onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}
         speed={speed}

@@ -1,5 +1,7 @@
 // src/components/ControlPanel.jsx
 import React from 'react'
+import { SPEED_MIN, SPEED_MAX } from '../config'
+import { computeAnimationDelay } from '../utils/animationHelpers'
 import './ControlPanel.css'
 
 function ControlPanel({
@@ -7,8 +9,8 @@ function ControlPanel({
   onPause,
   onStep,
   onBack,
-  onResetGrid,   // ← updated prop
-  onResetPath,   // ← new prop
+  onResetGrid,
+  onResetPath,
   onSpeedChange,
   onAlgorithmChange,
   selectedAlgorithm,
@@ -64,15 +66,16 @@ function ControlPanel({
       <div className="control-panel__slider">
         <input
           type="range"
-          min="10"
-          max="200"
+          min={SPEED_MIN}
+          max={SPEED_MAX}
+          step="1"
           value={speed}
           onChange={e => {
-            console.log('🎚️ Speed:', e.target.value)
+            console.log('🎚️ Speed param:', e.target.value)
             onSpeedChange(e)
           }}
         />
-        <span>{speed} ms</span>
+        <span>{computeAnimationDelay(speed)} ms</span>
       </div>
 
       <label className="control-panel__dropdown" htmlFor="algo-select">
