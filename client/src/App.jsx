@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
@@ -15,9 +16,11 @@ import {
   play,
   pause,
   back,
-  resetAll,
   setSpeed,
-  setAlgorithm
+  setAlgorithm,
+  // ─── NEW: import the two reset thunks
+  resetGridThunk,
+  resetPathThunk
 } from './store/pathfinderSlice'
 
 function App() {
@@ -56,7 +59,9 @@ function App() {
         onPause={() => dispatch(pause())}
         onStep={handleStep}
         onBack={() => dispatch(back())}
-        onReset={() => dispatch(resetAll())}
+        // ─── UPDATED: replaced single onReset with two separate handlers
+        onResetGrid={() => dispatch(resetGridThunk())}
+        onResetPath={() => dispatch(resetPathThunk())}
         onSpeedChange={e => dispatch(setSpeed(Number(e.target.value)))}
         selectedAlgorithm={selectedAlgorithm}
         onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}

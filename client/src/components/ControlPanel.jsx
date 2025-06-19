@@ -7,29 +7,58 @@ function ControlPanel({
   onPause,
   onStep,
   onBack,
-  onReset,
+  onResetGrid,   // ← updated prop
+  onResetPath,   // ← new prop
   onSpeedChange,
   onAlgorithmChange,
-  selectedAlgorithm,   // ← new prop
+  selectedAlgorithm,
   speed,
   statistics
 }) {
   return (
     <div className="control-panel">
-      <button type="button" onClick={() => { console.log('▶️ Play clicked'); onPlay() }}>
+      <button
+        type="button"
+        onClick={() => { console.log('▶️ Play clicked'); onPlay() }}
+      >
         Play
       </button>
-      <button type="button" onClick={() => { console.log('⏸️ Pause clicked'); onPause() }}>
+
+      <button
+        type="button"
+        onClick={() => { console.log('⏸️ Pause clicked'); onPause() }}
+      >
         Pause
       </button>
-      <button type="button" onClick={() => { console.log('⏭️ Step clicked'); onStep() }}>
+
+      <button
+        type="button"
+        onClick={() => { console.log('⏭️ Step clicked'); onStep() }}
+      >
         Step
       </button>
-      <button type="button" onClick={() => { console.log('⏮️ Back clicked'); onBack() }}>
+
+      <button
+        type="button"
+        onClick={() => { console.log('⏮️ Back clicked'); onBack() }}
+      >
         Back
       </button>
-      <button type="button" onClick={() => { console.log('🔄 Reset clicked'); onReset() }}>
-        Reset
+
+      {/* Reset Grid: clears to fresh empty grid */}
+      <button
+        type="button"
+        onClick={() => { console.log('🔄 Reset Grid clicked'); onResetGrid() }}
+      >
+        Reset Grid
+      </button>
+
+      {/* Reset Path: clears only visited & path markings */}
+      <button
+        type="button"
+        onClick={() => { console.log('♻️ Reset Path clicked'); onResetPath() }}
+      >
+        Reset Path
       </button>
 
       <div className="control-panel__slider">
@@ -38,7 +67,10 @@ function ControlPanel({
           min="10"
           max="200"
           value={speed}
-          onChange={e => { console.log('🎚️ Speed:', e.target.value); onSpeedChange(e) }}
+          onChange={e => {
+            console.log('🎚️ Speed:', e.target.value)
+            onSpeedChange(e)
+          }}
         />
         <span>{speed} ms</span>
       </div>
