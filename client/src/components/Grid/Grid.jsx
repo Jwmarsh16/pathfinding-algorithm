@@ -5,27 +5,36 @@ import {
   toggleWall,
   moveStart,
   moveEnd,
-  loadPreset
+  loadPreset,
+  resetPathThunk    // ← import the reset-path thunk
 } from '../../store/pathfinderSlice'
+import {
+  createRecursiveDivisionMaze,
+  createPrimsMaze,
+  createEllersMaze,
+  createRandomMaze
+} from '../../utils/gridHelpers'
 import Node from './Node'
 import './Grid.css'
 
 function Grid({ grid }) {
   const dispatch = useDispatch()
-  const [isMousePressed, setIsMousePressed]         = useState(false)
+  const [isMousePressed, setIsMousePressed] = useState(false)
   const [isStartNodeDragged, setIsStartNodeDragged] = useState(false)
-  const [isEndNodeDragged, setIsEndNodeDragged]     = useState(false)
+  const [isEndNodeDragged, setIsEndNodeDragged] = useState(false)
 
-  // Predefined grid configurations
   const predefinedGrids = {
     empty: createEmptyGrid,
     smallMaze: createSmallMaze,
     diagonalWalls: createDiagonalWalls,
+    recursiveDivision: createRecursiveDivisionMaze,
+    prims: createPrimsMaze,
+    ellers: createEllersMaze,
+    random: createRandomMaze
   }
 
   const handleMouseDown = (row, col) => {
     const node = grid[row][col]
-
     if (node.isStart) {
       setIsStartNodeDragged(true)
     } else if (node.isEnd) {
@@ -33,13 +42,11 @@ function Grid({ grid }) {
     } else {
       dispatch(toggleWall({ row, col }))
     }
-
     setIsMousePressed(true)
   }
 
   const handleMouseEnter = (row, col) => {
     if (!isMousePressed) return
-
     if (isStartNodeDragged) {
       dispatch(moveStart({ row, col }))
     } else if (isEndNodeDragged) {
@@ -56,10 +63,16 @@ function Grid({ grid }) {
   }
 
   const loadPredefinedGrid = (type) => {
+    console.log('Loading maze type:', type)
     const factory = predefinedGrids[type]
-    if (factory) {
-      dispatch(loadPreset(factory()))
+    if (!factory) {
+      console.warn('No maze generator for type:', type)
+      return
     }
+    // clear any previous visited/path state
+    dispatch(resetPathThunk())
+    // generate and load the new maze layout
+    dispatch(loadPreset(factory()))
   }
 
   return (
@@ -75,7 +88,17 @@ function Grid({ grid }) {
           <option value="empty">Empty Grid</option>
           <option value="smallMaze">Small Maze</option>
           <option value="diagonalWalls">Diagonal Walls</option>
+          <option value="recursiveDivision">Recursive Division Maze</option>
+          <option value="prims">Prim’s Maze</option>
+          <option value="ellers">Eller’s Maze</option>
+          <option value="random">Random Maze</option>
         </select>
+        <button
+          type="button"
+          onClick={() => loadPredefinedGrid('random')}
+        >
+          Generate Random Maze
+        </button>
       </div>
 
       <div
@@ -127,7 +150,7 @@ function createSmallMaze() {
 
 function createDiagonalWalls() {
   const grid = createEmptyGrid()
-  const max  = grid[0].length - 1
+  const max = grid[0].length - 1
   grid.forEach((rowArr, r) =>
     rowArr.forEach((n, c) => {
       if (r === c || r + c === max) n.isWall = true
