@@ -9,6 +9,10 @@ function ControlPanel({
   onPause,
   onStep,
   onBack,
+  onStepHoldStart,
+  onStepHoldEnd,
+  onBackHoldStart,
+  onBackHoldEnd,
   onResetGrid,
   onResetPath,
   onSpeedChange,
@@ -35,6 +39,9 @@ function ControlPanel({
 
       <button
         type="button"
+        onMouseDown={() => { console.log('⏭️ Step hold start'); onStepHoldStart() }}
+        onMouseUp={() => { console.log('⏭️ Step hold end'); onStepHoldEnd() }}
+        onMouseLeave={onStepHoldEnd}
         onClick={() => { console.log('⏭️ Step clicked'); onStep() }}
       >
         Step
@@ -42,6 +49,9 @@ function ControlPanel({
 
       <button
         type="button"
+        onMouseDown={() => { console.log('⏮️ Back hold start'); onBackHoldStart() }}
+        onMouseUp={() => { console.log('⏮️ Back hold end'); onBackHoldEnd() }}
+        onMouseLeave={onBackHoldEnd}
         onClick={() => { console.log('⏮️ Back clicked'); onBack() }}
       >
         Back

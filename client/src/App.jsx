@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
 import ControlPanel from './components/ControlPanel'
@@ -9,7 +9,6 @@ import Grid from './components/Grid/Grid'
 import Footer from './components/Footer'
 import './styles/global.css'
 
-// thunks & actions
 import {
   initializeSteps,
   processStep,
@@ -18,9 +17,11 @@ import {
   back,
   resetGridThunk,
   resetPathThunk,
-  changeSpeed,        // ← new thunk
+  changeSpeed,
   setAlgorithm
 } from './store/pathfinderSlice'
+
+import { computeAnimationDelay } from './utils/animationHelpers'
 
 function App() {
   const dispatch = useDispatch()
@@ -34,6 +35,50 @@ function App() {
   } = useSelector(state => state.pathfinder)
 
   const [helpOpen, setHelpOpen] = useState(false)
+  const [isStepHolding, setIsStepHolding] = useState(false)
+  const [isBackHolding, setIsBackHolding] = useState(false)
+  const stepHoldRef = useRef(null)
+  const backHoldRef = useRef(null)
+
+  // Repeat stepping while holding Step
+  useEffect(() => {
+    if (isStepHolding) {
+      if (stepHoldRef.current) clearInterval(stepHoldRef.current)
+      const delay = computeAnimationDelay(speed)
+      stepHoldRef.current = setInterval(() => dispatch(processStep()), delay)
+    } else {
+      if (stepHoldRef.current) {
+        clearInterval(stepHoldRef.current)
+        stepHoldRef.current = null
+      }
+    }
+    return () => {
+      if (stepHoldRef.current) {
+        clearInterval(stepHoldRef.current)
+        stepHoldRef.current = null
+      }
+    }
+  }, [isStepHolding, speed, dispatch])
+
+  // Repeat stepping back while holding Back
+  useEffect(() => {
+    if (isBackHolding) {
+      if (backHoldRef.current) clearInterval(backHoldRef.current)
+      const delay = computeAnimationDelay(speed)
+      backHoldRef.current = setInterval(() => dispatch(back()), delay)
+    } else {
+      if (backHoldRef.current) {
+        clearInterval(backHoldRef.current)
+        backHoldRef.current = null
+      }
+    }
+    return () => {
+      if (backHoldRef.current) {
+        clearInterval(backHoldRef.current)
+        backHoldRef.current = null
+      }
+    }
+  }, [isBackHolding, speed, dispatch])
 
   const handleStep = () => {
     if (steps.length === 0) {
@@ -42,6 +87,11 @@ function App() {
       dispatch(processStep())
     }
   }
+
+  const handleStepHoldStart = () => setIsStepHolding(true)
+  const handleStepHoldEnd   = () => setIsStepHolding(false)
+  const handleBackHoldStart = () => setIsBackHolding(true)
+  const handleBackHoldEnd   = () => setIsBackHolding(false)
 
   return (
     <div className="app">
@@ -58,9 +108,12 @@ function App() {
         onPause={() => dispatch(pause())}
         onStep={handleStep}
         onBack={() => dispatch(back())}
+        onStepHoldStart={handleStepHoldStart}
+        onStepHoldEnd={handleStepHoldEnd}
+        onBackHoldStart={handleBackHoldStart}
+        onBackHoldEnd={handleBackHoldEnd}
         onResetGrid={() => dispatch(resetGridThunk())}
         onResetPath={() => dispatch(resetPathThunk())}
-        // ─── UPDATED: use changeSpeed thunk for live speed changes
         onSpeedChange={e => dispatch(changeSpeed(Number(e.target.value)))}
         selectedAlgorithm={selectedAlgorithm}
         onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}
@@ -78,7 +131,6 @@ function App() {
       </button>
 
       <InfoPanel selectedAlgorithm={selectedAlgorithm} />
-
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <div className="grid-wrapper">
