@@ -9,6 +9,7 @@ import Grid from './components/Grid/Grid'
 import Footer from './components/Footer'
 import './styles/global.css'
 
+// thunks & actions
 import {
   initializeSteps,
   processStep,
@@ -31,7 +32,8 @@ function App() {
     noPathFound,
     speed,
     steps,
-    selectedAlgorithm
+    selectedAlgorithm,
+    isPlaying
   } = useSelector(state => state.pathfinder)
 
   const [helpOpen, setHelpOpen] = useState(false)
@@ -40,44 +42,32 @@ function App() {
   const stepHoldRef = useRef(null)
   const backHoldRef = useRef(null)
 
-  // Repeat stepping while holding Step
+  // Repeat stepping forward while holding “Step”
   useEffect(() => {
     if (isStepHolding) {
-      if (stepHoldRef.current) clearInterval(stepHoldRef.current)
-      const delay = computeAnimationDelay(speed)
-      stepHoldRef.current = setInterval(() => dispatch(processStep()), delay)
+      clearInterval(stepHoldRef.current)
+      stepHoldRef.current = setInterval(
+        () => dispatch(processStep()),
+        computeAnimationDelay(speed)
+      )
     } else {
-      if (stepHoldRef.current) {
-        clearInterval(stepHoldRef.current)
-        stepHoldRef.current = null
-      }
+      clearInterval(stepHoldRef.current)
     }
-    return () => {
-      if (stepHoldRef.current) {
-        clearInterval(stepHoldRef.current)
-        stepHoldRef.current = null
-      }
-    }
+    return () => clearInterval(stepHoldRef.current)
   }, [isStepHolding, speed, dispatch])
 
-  // Repeat stepping back while holding Back
+  // Repeat stepping back while holding “Back”
   useEffect(() => {
     if (isBackHolding) {
-      if (backHoldRef.current) clearInterval(backHoldRef.current)
-      const delay = computeAnimationDelay(speed)
-      backHoldRef.current = setInterval(() => dispatch(back()), delay)
+      clearInterval(backHoldRef.current)
+      backHoldRef.current = setInterval(
+        () => dispatch(back()),
+        computeAnimationDelay(speed)
+      )
     } else {
-      if (backHoldRef.current) {
-        clearInterval(backHoldRef.current)
-        backHoldRef.current = null
-      }
+      clearInterval(backHoldRef.current)
     }
-    return () => {
-      if (backHoldRef.current) {
-        clearInterval(backHoldRef.current)
-        backHoldRef.current = null
-      }
-    }
+    return () => clearInterval(backHoldRef.current)
   }, [isBackHolding, speed, dispatch])
 
   const handleStep = () => {
@@ -88,10 +78,11 @@ function App() {
     }
   }
 
-  const handleStepHoldStart = () => setIsStepHolding(true)
-  const handleStepHoldEnd   = () => setIsStepHolding(false)
-  const handleBackHoldStart = () => setIsBackHolding(true)
-  const handleBackHoldEnd   = () => setIsBackHolding(false)
+  // Toggle play/pause
+  const handleTogglePlay = () => {
+    if (isPlaying) dispatch(pause())
+    else          dispatch(play())
+  }
 
   return (
     <div className="app">
@@ -104,14 +95,14 @@ function App() {
       )}
 
       <ControlPanel
-        onPlay={() => dispatch(play())}
-        onPause={() => dispatch(pause())}
+        isPlaying={isPlaying}
+        onTogglePlay={handleTogglePlay}
         onStep={handleStep}
         onBack={() => dispatch(back())}
-        onStepHoldStart={handleStepHoldStart}
-        onStepHoldEnd={handleStepHoldEnd}
-        onBackHoldStart={handleBackHoldStart}
-        onBackHoldEnd={handleBackHoldEnd}
+        onStepHoldStart={() => setIsStepHolding(true)}
+        onStepHoldEnd={() => setIsStepHolding(false)}
+        onBackHoldStart={() => setIsBackHolding(true)}
+        onBackHoldEnd={() => setIsBackHolding(false)}
         onResetGrid={() => dispatch(resetGridThunk())}
         onResetPath={() => dispatch(resetPathThunk())}
         onSpeedChange={e => dispatch(changeSpeed(Number(e.target.value)))}

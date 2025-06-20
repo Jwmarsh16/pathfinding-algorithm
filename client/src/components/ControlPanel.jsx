@@ -5,8 +5,8 @@ import { computeAnimationDelay } from '../utils/animationHelpers'
 import './ControlPanel.css'
 
 function ControlPanel({
-  onPlay,
-  onPause,
+  isPlaying,
+  onTogglePlay,
   onStep,
   onBack,
   onStepHoldStart,
@@ -23,20 +23,18 @@ function ControlPanel({
 }) {
   return (
     <div className="control-panel">
+      {/* Toggle Play/Pause */}
       <button
         type="button"
-        onClick={() => { console.log('▶️ Play clicked'); onPlay() }}
+        onClick={() => {
+          console.log(isPlaying ? '⏸️ Pause clicked' : '▶️ Play clicked')
+          onTogglePlay()
+        }}
       >
-        Play
+        {isPlaying ? 'Pause' : 'Play'}
       </button>
 
-      <button
-        type="button"
-        onClick={() => { console.log('⏸️ Pause clicked'); onPause() }}
-      >
-        Pause
-      </button>
-
+      {/* Step */}
       <button
         type="button"
         onMouseDown={() => { console.log('⏭️ Step hold start'); onStepHoldStart() }}
@@ -47,6 +45,7 @@ function ControlPanel({
         Step
       </button>
 
+      {/* Back */}
       <button
         type="button"
         onMouseDown={() => { console.log('⏮️ Back hold start'); onBackHoldStart() }}
@@ -57,7 +56,7 @@ function ControlPanel({
         Back
       </button>
 
-      {/* Reset Grid: clears to fresh empty grid */}
+      {/* Reset Grid */}
       <button
         type="button"
         onClick={() => { console.log('🔄 Reset Grid clicked'); onResetGrid() }}
@@ -65,7 +64,7 @@ function ControlPanel({
         Reset Grid
       </button>
 
-      {/* Reset Path: clears only visited & path markings */}
+      {/* Reset Path */}
       <button
         type="button"
         onClick={() => { console.log('♻️ Reset Path clicked'); onResetPath() }}
@@ -73,6 +72,7 @@ function ControlPanel({
         Reset Path
       </button>
 
+      {/* Speed Slider */}
       <div className="control-panel__slider">
         <input
           type="range"
@@ -88,6 +88,7 @@ function ControlPanel({
         <span>{computeAnimationDelay(speed)} ms</span>
       </div>
 
+      {/* Algorithm Dropdown */}
       <label className="control-panel__dropdown" htmlFor="algo-select">
         Algorithm
       </label>
@@ -105,6 +106,7 @@ function ControlPanel({
         <option value="astar">A*</option>
       </select>
 
+      {/* Statistics */}
       <div className="control-panel__stats">
         <span>Visited: {statistics.visitedNodes}</span>
         <span>Path: {statistics.pathLength ?? '–'}</span>
