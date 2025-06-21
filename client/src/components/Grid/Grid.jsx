@@ -6,7 +6,7 @@ import {
   moveStart,
   moveEnd,
   loadPreset,
-  resetPathThunk    // ← import the reset-path thunk
+  resetPathThunk
 } from '../../store/pathfinderSlice'
 import {
   createRecursiveDivisionMaze,
@@ -23,10 +23,10 @@ function Grid({ grid }) {
   const [isStartNodeDragged, setIsStartNodeDragged] = useState(false)
   const [isEndNodeDragged, setIsEndNodeDragged] = useState(false)
 
+  // Removed diagonalWalls preset
   const predefinedGrids = {
     empty: createEmptyGrid,
     smallMaze: createSmallMaze,
-    diagonalWalls: createDiagonalWalls,
     recursiveDivision: createRecursiveDivisionMaze,
     prims: createPrimsMaze,
     ellers: createEllersMaze,
@@ -63,15 +63,9 @@ function Grid({ grid }) {
   }
 
   const loadPredefinedGrid = (type) => {
-    console.log('Loading maze type:', type)
     const factory = predefinedGrids[type]
-    if (!factory) {
-      console.warn('No maze generator for type:', type)
-      return
-    }
-    // clear any previous visited/path state
+    if (!factory) return
     dispatch(resetPathThunk())
-    // generate and load the new maze layout
     dispatch(loadPreset(factory()))
   }
 
@@ -87,7 +81,6 @@ function Grid({ grid }) {
           </option>
           <option value="empty">Empty Grid</option>
           <option value="smallMaze">Small Maze</option>
-          <option value="diagonalWalls">Diagonal Walls</option>
           <option value="recursiveDivision">Recursive Division Maze</option>
           <option value="prims">Prim’s Maze</option>
           <option value="ellers">Eller’s Maze</option>
@@ -148,16 +141,7 @@ function createSmallMaze() {
   return grid
 }
 
-function createDiagonalWalls() {
-  const grid = createEmptyGrid()
-  const max = grid[0].length - 1
-  grid.forEach((rowArr, r) =>
-    rowArr.forEach((n, c) => {
-      if (r === c || r + c === max) n.isWall = true
-    })
-  )
-  return grid
-}
+// Removed createDiagonalWalls helper entirely
 
 function createNode(row, col) {
   return {

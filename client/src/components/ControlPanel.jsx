@@ -5,6 +5,7 @@ import { computeAnimationDelay } from '../utils/animationHelpers'
 import './ControlPanel.css'
 
 function ControlPanel({
+  // original props
   isPlaying,
   onTogglePlay,
   onStep,
@@ -16,61 +17,105 @@ function ControlPanel({
   onResetGrid,
   onResetPath,
   onSpeedChange,
-  onAlgorithmChange,
-  selectedAlgorithm,
   speed,
-  statistics
+  statistics,
+
+  // comparison mode props
+  compareMode,
+  onCompareToggle,
+  selectedAlgorithm,
+  onAlgorithmChange,
+  selectedAlgorithmA,
+  selectedAlgorithmB,
+  onAlgorithmChangeA,
+  onAlgorithmChangeB
 }) {
   return (
     <div className="control-panel">
-      {/* Toggle Play/Pause */}
+      {/* Comparison Mode Toggle */}
+      <label className="control-panel__compare-toggle">
+        <input
+          type="checkbox"
+          checked={compareMode}
+          onChange={e => onCompareToggle(e.target.checked)}
+        />
+        Comparison Mode
+      </label>
+
+      {/* Algorithm selector(s) */}
+      {compareMode ? (
+        <>
+          <label htmlFor="algoA-select">Algorithm A</label>
+          <select
+            id="algoA-select"
+            value={selectedAlgorithmA}
+            onChange={e => onAlgorithmChangeA(e.target.value)}
+          >
+            <option value="bfs">BFS</option>
+            <option value="dfs">DFS</option>
+            <option value="dijkstra">Dijkstra</option>
+            <option value="astar">A*</option>
+          </select>
+
+          <label htmlFor="algoB-select">Algorithm B</label>
+          <select
+            id="algoB-select"
+            value={selectedAlgorithmB}
+            onChange={e => onAlgorithmChangeB(e.target.value)}
+          >
+            <option value="bfs">BFS</option>
+            <option value="dfs">DFS</option>
+            <option value="dijkstra">Dijkstra</option>
+            <option value="astar">A*</option>
+          </select>
+        </>
+      ) : (
+        <>
+          <label className="control-panel__dropdown" htmlFor="algo-select">
+            Algorithm
+          </label>
+          <select
+            id="algo-select"
+            value={selectedAlgorithm}
+            onChange={e => onAlgorithmChange(e.target.value)}
+          >
+            <option value="bfs">BFS</option>
+            <option value="dfs">DFS</option>
+            <option value="dijkstra">Dijkstra</option>
+            <option value="astar">A*</option>
+          </select>
+        </>
+      )}
+
+      {/* Play/Pause / Step / Back */}
       <button
         type="button"
-        onClick={() => {
-          console.log(isPlaying ? '⏸️ Pause clicked' : '▶️ Play clicked')
-          onTogglePlay()
-        }}
+        onClick={onTogglePlay}
       >
         {isPlaying ? 'Pause' : 'Play'}
       </button>
-
-      {/* Step */}
       <button
         type="button"
-        onMouseDown={() => { console.log('⏭️ Step hold start'); onStepHoldStart() }}
-        onMouseUp={() => { console.log('⏭️ Step hold end'); onStepHoldEnd() }}
+        onMouseDown={onStepHoldStart}
+        onMouseUp={onStepHoldEnd}
         onMouseLeave={onStepHoldEnd}
-        onClick={() => { console.log('⏭️ Step clicked'); onStep() }}
+        onClick={onStep}
       >
         Step
       </button>
-
-      {/* Back */}
       <button
         type="button"
-        onMouseDown={() => { console.log('⏮️ Back hold start'); onBackHoldStart() }}
-        onMouseUp={() => { console.log('⏮️ Back hold end'); onBackHoldEnd() }}
+        onMouseDown={onBackHoldStart}
+        onMouseUp={onBackHoldEnd}
         onMouseLeave={onBackHoldEnd}
-        onClick={() => { console.log('⏮️ Back clicked'); onBack() }}
+        onClick={onBack}
       >
         Back
       </button>
 
-      {/* Reset Grid */}
-      <button
-        type="button"
-        onClick={() => { console.log('🔄 Reset Grid clicked'); onResetGrid() }}
-      >
-        Reset Grid
-      </button>
-
-      {/* Reset Path */}
-      <button
-        type="button"
-        onClick={() => { console.log('♻️ Reset Path clicked'); onResetPath() }}
-      >
-        Reset Path
-      </button>
+      {/* Resets */}
+      <button type="button" onClick={onResetGrid}>Reset Grid</button>
+      <button type="button" onClick={onResetPath}>Reset Path</button>
 
       {/* Speed Slider */}
       <div className="control-panel__slider">
@@ -80,31 +125,10 @@ function ControlPanel({
           max={SPEED_MAX}
           step="1"
           value={speed}
-          onChange={e => {
-            console.log('🎚️ Speed param:', e.target.value)
-            onSpeedChange(e)
-          }}
+          onChange={onSpeedChange}
         />
         <span>{computeAnimationDelay(speed)} ms</span>
       </div>
-
-      {/* Algorithm Dropdown */}
-      <label className="control-panel__dropdown" htmlFor="algo-select">
-        Algorithm
-      </label>
-      <select
-        id="algo-select"
-        value={selectedAlgorithm}
-        onChange={e => {
-          console.log('🔀 Algo:', e.target.value)
-          onAlgorithmChange(e.target.value)
-        }}
-      >
-        <option value="bfs">BFS</option>
-        <option value="dfs">DFS</option>
-        <option value="dijkstra">Dijkstra</option>
-        <option value="astar">A*</option>
-      </select>
 
       {/* Statistics */}
       <div className="control-panel__stats">

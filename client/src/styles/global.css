@@ -1,32 +1,33 @@
- .app {
-   display: flex;
-   flex-direction: column;
+/* src/styles/global.css */
+
+.app {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   align-items: stretch;     /* ← now children can fill 100% width */
-   font-family: Arial, sans-serif;
-   background-color: #f7f9fc;
-   min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fc;
+  min-height: 100vh;
   width: 100%;              /* ← explicitly fill the viewport width */
- }
+}
 
-  
-  header {
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  footer {
-    margin-top: auto;
-    padding: 10px;
-    background-color: #f1f1f1;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .no-path-banner {
+header {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+}
+
+footer {
+  margin-top: auto;
+  padding: 10px;
+  background-color: #f1f1f1;
+  width: 100%;
+  text-align: center;
+}
+
+.no-path-banner {
   background-color: #ffebeb;
   color: #b00020;
   padding: 0.75rem 1rem;
@@ -57,8 +58,54 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
- /* force this single child of .app to span the full width: */
- align-self: stretch;
+  /* force this single child of .app to span the full width: */
+  align-self: stretch;
   width: 100%;
 }
 
+/* When in compare mode, wrap two halves side by side */
+.grid-wrapper.compare {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Each half takes equal width */
+.grid-half {
+  flex: 1;
+}
+
+/* Optional: ensure headings align */
+.grid-half h3 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Side-by-side info panels in comparison mode */
+.info-comparison {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.info-half {
+  flex: 1;
+}
+
+/* Comparison description */
+.comparison-description {
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+/* Side-by-side stats in comparison mode */
+.stats-comparison {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stats-half {
+  flex: 1;
+  text-align: center;
+}

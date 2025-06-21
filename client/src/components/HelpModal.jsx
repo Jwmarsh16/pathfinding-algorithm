@@ -1,3 +1,4 @@
+// src/components/HelpModal.jsx
 import React from 'react'
 import './HelpModal.css'
 
@@ -36,25 +37,83 @@ function HelpModal({ open, onClose }) {
         </ul>
 
         <h3>Learn More</h3>
+
+        <h4>Pathfinding Algorithms</h4>
         <ul>
           <li>
-            <a href="https://en.wikipedia.org/wiki/Breadth-first_search" target="_blank" rel="noopener noreferrer">
-              BFS on Wikipedia
+            <a
+              href="https://en.wikipedia.org/wiki/Breadth-first_search"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Breadth-First Search (BFS)
             </a>
           </li>
           <li>
-            <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener noreferrer">
-              DFS on Wikipedia
+            <a
+              href="https://en.wikipedia.org/wiki/Depth-first_search"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Depth-First Search (DFS)
             </a>
           </li>
           <li>
-            <a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm" target="_blank" rel="noopener noreferrer">
-              Dijkstra’s Algorithm on Wikipedia
+            <a
+              href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Dijkstra’s Algorithm
             </a>
           </li>
           <li>
-            <a href="https://en.wikipedia.org/wiki/A*_search_algorithm" target="_blank" rel="noopener noreferrer">
-              A* Search on Wikipedia
+            <a
+              href="https://en.wikipedia.org/wiki/A*_search_algorithm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              A* Search
+            </a>
+          </li>
+        </ul>
+
+        <h4>Maze Generation Algorithms</h4>
+        <ul>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/Maze_generation_algorithm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Maze Generation Overview
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Recursive Division Method
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/Prim%27s_algorithm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Prim’s Algorithm
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://weblog.jamisbuck.org/2010/12/29/maze-generation-eller-s-algorithm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Eller’s Algorithm (Jamis Buck)
             </a>
           </li>
         </ul>
