@@ -2,10 +2,11 @@
 /**
  * File: src/App.jsx
  *
- * Changes for wiring Step/Back in single mode:
- * - Imported `stepOnce` thunk and removed `initializeSteps` & `processStep` imports.
- * - In single-mode, `handleStep` now dispatches `stepOnce()`.
- * - In single-mode, `handleBack` now dispatches `back()`.
+ * Changes:
+ * - Updated handleStepHoldStart and handleBackHoldStart to branch
+ *   on compareMode:
+ *   • In single mode, continue dispatching stepOnce()/back().
+ *   • In compare mode, repeatedly call handleStep()/handleBack().
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -70,7 +71,10 @@ function App() {
   const [stepsB, setStepsB]               = useState([])
   const [stepIndex, setStepIndex]         = useState(0)
   const [isPlayingComp, setIsPlayingComp] = useState(false)
-  const intervalRef = useRef(null)
+
+  const intervalRef  = useRef(null)
+  const stepHoldRef  = useRef(null)
+  const backHoldRef  = useRef(null)
 
   useEffect(() => {
     if (compareMode) {
@@ -151,31 +155,46 @@ function App() {
       setIsPlayingComp(false)
       setStepIndex(idx => {
         const prev = idx
-        const sA = stepsA[prev]; const sB = stepsB[prev]
-        if (sA) {
-          setGridA(prevG => {
-            const g = prevG.map(r => r.map(c => ({ ...c })))
-            const { row, col } = sA.node
-            if (sA.isPath) g[row][col].isPath = true
-            else           g[row][col].isVisited = true
-            return g
-          })
-        }
-        if (sB) {
-          setGridB(prevG => {
-            const g = prevG.map(r => r.map(c => ({ ...c })))
-            const { row, col } = sB.node
-            if (sB.isPath) g[row][col].isPath = true
-            else           g[row][col].isVisited = true
-            return g
-          })
-        }
+        ;[stepsA, stepsB].forEach((steps, i) => {
+          const s = steps[prev]
+          const setGrid = i === 0 ? setGridA : setGridB
+          if (s) {
+            setGrid(prevG => {
+              const g = prevG.map(r => r.map(c => ({ ...c })))
+              const { row, col } = s.node
+              if (s.isPath) g[row][col].isPath = true
+              else           g[row][col].isVisited = true
+              return g
+            })
+          }
+        })
         return prev + 1
       })
     } else {
-      // Single-mode: initialize if needed then advance one step
       dispatch(stepOnce())
     }
+  }
+
+  // Hold‐to‐repeat for Step
+  const handleStepHoldStart = () => {
+    clearInterval(stepHoldRef.current)
+    if (compareMode) {
+      // compare‐mode repeat
+      handleStep()
+      stepHoldRef.current = setInterval(() => {
+        handleStep()
+      }, 200)
+    } else {
+      // single‐mode repeat
+      dispatch(stepOnce())
+      stepHoldRef.current = setInterval(() => {
+        dispatch(stepOnce())
+      }, 200)
+    }
+  }
+
+  const handleStepHoldEnd = () => {
+    clearInterval(stepHoldRef.current)
   }
 
   const handleBack = () => {
@@ -185,31 +204,44 @@ function App() {
       setStepIndex(idx => {
         const prev = idx - 1
         if (prev < 0) return 0
-        const sA = stepsA[prev]; const sB = stepsB[prev]
-        if (sA) {
-          setGridA(prevG => {
-            const g = prevG.map(r => r.map(c => ({ ...c })))
-            const { row, col } = sA.node
-            if (sA.isPath) g[row][col].isPath = false
-            else           g[row][col].isVisited = false
-            return g
-          })
-        }
-        if (sB) {
-          setGridB(prevG => {
-            const g = prevG.map(r => r.map(c => ({ ...c })))
-            const { row, col } = sB.node
-            if (sB.isPath) g[row][col].isPath = false
-            else           g[row][col].isVisited = false
-            return g
-          })
-        }
+        ;[stepsA, stepsB].forEach((steps, i) => {
+          const s = steps[prev]
+          const setGrid = i === 0 ? setGridA : setGridB
+          if (s) {
+            setGrid(prevG => {
+              const g = prevG.map(r => r.map(c => ({ ...c })))
+              const { row, col } = s.node
+              if (s.isPath) g[row][col].isPath = false
+              else           g[row][col].isVisited = false
+              return g
+            })
+          }
+        })
         return prev
       })
     } else {
-      // Single-mode: step back one
       dispatch(back())
     }
+  }
+
+  // Hold‐to‐repeat for Back
+  const handleBackHoldStart = () => {
+    clearInterval(backHoldRef.current)
+    if (compareMode) {
+      handleBack()
+      backHoldRef.current = setInterval(() => {
+        handleBack()
+      }, 200)
+    } else {
+      dispatch(back())
+      backHoldRef.current = setInterval(() => {
+        dispatch(back())
+      }, 200)
+    }
+  }
+
+  const handleBackHoldEnd = () => {
+    clearInterval(backHoldRef.current)
   }
 
   // Derive stats for comparison mode
@@ -235,10 +267,10 @@ function App() {
         onTogglePlay={handleTogglePlay}
         onStep={handleStep}
         onBack={handleBack}
-        onStepHoldStart={() => {}}
-        onStepHoldEnd={() => {}}
-        onBackHoldStart={() => {}}
-        onBackHoldEnd={() => {}}
+        onStepHoldStart={handleStepHoldStart}
+        onStepHoldEnd={handleStepHoldEnd}
+        onBackHoldStart={handleBackHoldStart}
+        onBackHoldEnd={handleBackHoldEnd}
         onResetGrid={() => {
           dispatch(resetGridThunk())
           if (compareMode) {
@@ -289,7 +321,6 @@ function App() {
               <InfoPanel selectedAlgorithm={algoB} />
             </div>
           </div>
-
           <div className="grid-wrapper compare">
             <div className="grid-half">
               <h3>Algorithm A: {algoA.toUpperCase()}</h3>
