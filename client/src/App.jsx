@@ -1,7 +1,11 @@
 // src/App.jsx
 /**
- * Added className="visited" and className="path" to each <span> in the stats panels
- * so that the badge styling defined in global.css applies correctly.
+ * File: src/App.jsx
+ *
+ * Changes for wiring Step/Back in single mode:
+ * - Imported `stepOnce` thunk and removed `initializeSteps` & `processStep` imports.
+ * - In single-mode, `handleStep` now dispatches `stepOnce()`.
+ * - In single-mode, `handleBack` now dispatches `back()`.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -20,9 +24,8 @@ import {
   changeSpeed,
   pause,
   play,
-  initializeSteps,
-  processStep,
   back,
+  stepOnce,
   setAlgorithm
 } from './store/pathfinderSlice'
 import bfs from './algorithms/bfs'
@@ -170,7 +173,8 @@ function App() {
         return prev + 1
       })
     } else {
-      dispatch(initializeSteps()).then(() => dispatch(processStep()))
+      // Single-mode: initialize if needed then advance one step
+      dispatch(stepOnce())
     }
   }
 
@@ -203,6 +207,7 @@ function App() {
         return prev
       })
     } else {
+      // Single-mode: step back one
       dispatch(back())
     }
   }
@@ -276,7 +281,6 @@ function App() {
 
       {compareMode ? (
         <>
-          {/* InfoPanels for both algorithms */}
           <div className="comparison-info-panels">
             <div className="info-panel-half">
               <InfoPanel selectedAlgorithm={algoA} />
@@ -290,7 +294,6 @@ function App() {
             <div className="grid-half">
               <h3>Algorithm A: {algoA.toUpperCase()}</h3>
               <Grid grid={gridA} />
-              {/* Stats beneath grid */}
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedA}</span>
                 <span className="path">Path: {pathA}</span>
@@ -299,7 +302,6 @@ function App() {
             <div className="grid-half">
               <h3>Algorithm B: {algoB.toUpperCase()}</h3>
               <Grid grid={gridB} />
-              {/* Stats beneath grid */}
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedB}</span>
                 <span className="path">Path: {pathB}</span>
