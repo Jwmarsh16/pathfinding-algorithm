@@ -1,4 +1,5 @@
 // src/utils/gridHelpers.js
+// — Added `weight` property (default 1) to each node to enable weighted pathfinding.
 
 import {
   GRID_ROWS,
@@ -9,6 +10,7 @@ import {
 
 /**
  * Create a 2D grid of node objects, initializing start/end positions.
+ * Now each node includes a `weight` (default 1) for weighted algorithms.
  * @returns {Object[][]} The initialized grid.
  */
 function createInitialGrid() {
@@ -26,8 +28,18 @@ function createInitialGrid() {
 /**
  * Create a single node object.
  * @param {number} row - The row index of the node.
- * @param {number} col - The column index of the node.
- * @returns {{row: number, col: number, isStart: boolean, isEnd: boolean, isWall: boolean, isVisited: boolean, isPath: boolean, previousNode: Object|null}}
+ * @param {number} col - The col index of the node.
+ * @returns {{
+ *   row: number,
+ *   col: number,
+ *   isStart: boolean,
+ *   isEnd: boolean,
+ *   isWall: boolean,
+ *   isVisited: boolean,
+ *   isPath: boolean,
+ *   previousNode: Object|null,
+ *   weight: number
+ * }}
  */
 function createNode(row, col) {
   return {
@@ -38,12 +50,14 @@ function createNode(row, col) {
     isWall:       false,
     isVisited:    false,
     isPath:       false,
-    previousNode: null
+    previousNode: null,
+    weight:       1    // <-- default cost for weighted algorithms
   }
 }
 
 /**
  * Remove any visitation/path flags and clear previousNode pointers.
+ * Leaves `weight` intact so custom weights persist across runs.
  * @param {Object[][]} grid - The grid to clear.
  */
 function clearGridVisualization(grid) {
@@ -52,6 +66,7 @@ function clearGridVisualization(grid) {
       node.isVisited = false
       node.isPath = false
       node.previousNode = null
+      // node.weight remains unchanged
     })
   )
 }
@@ -242,17 +257,14 @@ function createEllersMaze() {
   const grid = createInitialGrid()
   grid.forEach(r => r.forEach(n => (n.isWall = true)))
 
-  // Initialize first-row sets
   let sets = Array.from({ length: cellCols }, (_, i) => i)
   let nextSetId = cellCols
 
   for (let row = 0; row < cellRows; row++) {
-    // 1) Carve cell areas
     for (let col = 0; col < cellCols; col++) {
       grid[row * 2 + 1][col * 2 + 1].isWall = false
     }
 
-    // 2) Horizontal merges
     for (let col = 0; col < cellCols - 1; col++) {
       if (sets[col] !== sets[col + 1] && Math.random() < 0.5) {
         grid[row * 2 + 1][col * 2 + 2].isWall = false
@@ -262,7 +274,6 @@ function createEllersMaze() {
       }
     }
 
-    // Last row: unify any remaining sets horizontally
     if (row === cellRows - 1) {
       for (let col = 0; col < cellCols - 1; col++) {
         if (sets[col] !== sets[col + 1]) {
@@ -275,7 +286,6 @@ function createEllersMaze() {
       break
     }
 
-    // 3) Vertical connections (at least one per set)
     const hasDown = {}
     const newSets = Array(cellCols).fill(null)
     sets.forEach((setId, col) => {
@@ -285,7 +295,6 @@ function createEllersMaze() {
         hasDown[setId] = true
       }
     })
-    // Guarantee each set has a down-carve
     const groups = {}
     sets.forEach((s, c) => (groups[s] = [...(groups[s] || []), c]))
     for (const s in groups) {
@@ -296,7 +305,6 @@ function createEllersMaze() {
         newSets[c] = +s
       }
     }
-    // Assign new IDs where needed
     for (let col = 0; col < cellCols; col++) {
       if (newSets[col] === null) newSets[col] = nextSetId++
     }

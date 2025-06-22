@@ -4,7 +4,7 @@ function Header() {
         <h1>Pathfinder Algorithm Visualizer</h1>
         <nav>
           <a href="#about">About</a>
-          <a href="#credits">Credits</a>
+          <a href="#credits"></a>
         </nav>
       </header>
     );

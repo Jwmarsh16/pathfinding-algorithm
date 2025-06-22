@@ -4,7 +4,7 @@ function Footer({ pathLength, visitedNodes, executionTime }) {
         <p>Path Length: {pathLength || 'N/A'}</p>
         <p>Visited Nodes: {visitedNodes || 0}</p>
         {executionTime && <p>Execution Time: {executionTime} ms</p>}
-        <p>Created by [Your Name]</p>
+        <p>Created by Jonathan W. Marshall</p>
       </footer>
     );
   }

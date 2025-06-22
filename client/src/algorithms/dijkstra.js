@@ -1,12 +1,6 @@
 // src/algorithms/dijkstra.js
+// — Updated cost calculation to use `neighbor.weight` instead of fixed 1.
 
-/**
- * Dijkstra’s algorithm for uniform-weight grid pathfinding.
- * @param {Object[][]} grid       2D array of node objects.
- * @param {Object} startNode      Starting node.
- * @param {Object} endNode        Target node.
- * @returns {{ visitedNodes: Object[], path: Object[] }}
- */
 function dijkstra(grid, startNode, endNode) {
   // reset all nodes
   for (const row of grid) {
@@ -24,7 +18,6 @@ function dijkstra(grid, startNode, endNode) {
   const pq = [startNode]
 
   while (pq.length) {
-    // sort so lowest-distance node is first
     pq.sort((a, b) => a.distance - b.distance)
     const current = pq.shift()
     if (current.visited) continue
@@ -37,7 +30,8 @@ function dijkstra(grid, startNode, endNode) {
     for (const neighbor of getNeighbors(current, grid)) {
       if (neighbor.visited || neighbor.isWall) continue
 
-      const alt = current.distance + 1  // uniform weight = 1
+      // factor in the node’s weight
+      const alt = current.distance + neighbor.weight
       if (alt < neighbor.distance) {
         neighbor.distance = alt
         neighbor.previousNode = current
@@ -53,7 +47,6 @@ function dijkstra(grid, startNode, endNode) {
     path.unshift(curr)
     curr = curr.previousNode
   }
-  // if we didn’t actually reach the start, return empty path
   if (path[0] !== startNode) {
     return { visitedNodes: visitedNodesInOrder, path: [] }
   }
@@ -61,12 +54,6 @@ function dijkstra(grid, startNode, endNode) {
   return { visitedNodes: visitedNodesInOrder, path }
 }
 
-/**
- * Get all neighbors (up, right, down, left) of a node.
- * @param {Object} node
- * @param {Object[][]} grid
- * @returns {Object[]}
- */
 function getNeighbors(node, grid) {
   const { row, col } = node
   const neighbors = []

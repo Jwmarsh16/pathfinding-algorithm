@@ -1,4 +1,9 @@
 // src/App.jsx
+/**
+ * Added className="visited" and className="path" to each <span> in the stats panels
+ * so that the badge styling defined in global.css applies correctly.
+ */
+
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
@@ -17,7 +22,8 @@ import {
   play,
   initializeSteps,
   processStep,
-  back
+  back,
+  setAlgorithm
 } from './store/pathfinderSlice'
 import bfs from './algorithms/bfs'
 import dfs from './algorithms/dfs'
@@ -25,10 +31,6 @@ import dijkstra from './algorithms/dijkstra'
 import astar from './algorithms/astar'
 import { computeAnimationDelay } from './utils/animationHelpers'
 
-/**
- * Run the named algorithm on a clone of baseGrid.
- * Returns the new grid, the step list, and stats.
- */
 function runAlgo(name, baseGrid) {
   const grid = baseGrid.map(row => row.map(cell => ({ ...cell })))
   const flat = grid.flat()
@@ -41,27 +43,21 @@ function runAlgo(name, baseGrid) {
     case 'astar':    res = astar(grid, start, end);    break
     default:         res = bfs(grid, start, end)
   }
-  const visitedCount = res.visitedNodes.length
-  const pathCount    = res.path.length
-  const steps = [
-    ...res.visitedNodes.map(n => ({ node: n, isPath: false })),
-    ...res.path.map(n =>       ({ node: n, isPath: true  }))
-  ]
-  return { grid, steps, visitedCount, pathCount }
+  const visit = res.visitedNodes.map(n => ({ node: n, isPath: false }))
+  const path  = res.path.map(n => ({ node: n, isPath: true }))
+  return { grid, steps: [...visit, ...path] }
 }
 
 function App() {
-  const dispatch    = useDispatch()
-  const reduxGrid   = useSelector(s => s.pathfinder.grid)
-  const speed       = useSelector(s => s.pathfinder.speed)
-  const statistics  = useSelector(s => s.pathfinder.statistics)
-  const noPathFound = useSelector(s => s.pathfinder.noPathFound)
-  const isPlayingRd = useSelector(s => s.pathfinder.isPlaying)
+  const dispatch          = useDispatch()
+  const reduxGrid         = useSelector(s => s.pathfinder.grid)
+  const speed             = useSelector(s => s.pathfinder.speed)
+  const statistics        = useSelector(s => s.pathfinder.statistics)
+  const noPathFound       = useSelector(s => s.pathfinder.noPathFound)
+  const isPlayingRd       = useSelector(s => s.pathfinder.isPlaying)
+  const selectedAlgorithm = useSelector(s => s.pathfinder.selectedAlgorithm)
 
-  // Help modal
   const [helpOpen, setHelpOpen] = useState(false)
-
-  // Comparison‐mode state
   const [compareMode, setCompareMode]     = useState(false)
   const [algoA, setAlgoA]                 = useState('bfs')
   const [algoB, setAlgoB]                 = useState('dfs')
@@ -69,40 +65,33 @@ function App() {
   const [gridB, setGridB]                 = useState(reduxGrid)
   const [stepsA, setStepsA]               = useState([])
   const [stepsB, setStepsB]               = useState([])
-  const [statsA, setStatsA]               = useState({ visitedNodes: 0, pathLength: null })
-  const [statsB, setStatsB]               = useState({ visitedNodes: 0, pathLength: null })
   const [stepIndex, setStepIndex]         = useState(0)
   const [isPlayingComp, setIsPlayingComp] = useState(false)
   const intervalRef = useRef(null)
 
-  // Reset clones on grid change or mode toggle
   useEffect(() => {
     if (compareMode) {
       setGridA(reduxGrid.map(r => r.map(c => ({ ...c }))))
       setGridB(reduxGrid.map(r => r.map(c => ({ ...c }))))
-      setStepsA([])
-      setStepsB([])
-      setStatsA({ visitedNodes: 0, pathLength: null })
-      setStatsB({ visitedNodes: 0, pathLength: null })
+      setStepsA([]); setStepsB([])
       setStepIndex(0)
       setIsPlayingComp(false)
       clearInterval(intervalRef.current)
     }
   }, [compareMode, reduxGrid])
 
-  // Play‐loop for comparison
   useEffect(() => {
     if (compareMode && isPlayingComp) {
       clearInterval(intervalRef.current)
       intervalRef.current = setInterval(() => {
         setStepIndex(idx => {
-          if (idx >= stepsA.length && idx >= stepsB.length) {
+          const next = idx
+          if (next >= stepsA.length && next >= stepsB.length) {
             clearInterval(intervalRef.current)
             setIsPlayingComp(false)
-            return idx
+            return next
           }
-          // Apply step to A
-          const sA = stepsA[idx]
+          const sA = stepsA[next]
           if (sA) {
             setGridA(prev => {
               const g = prev.map(r => r.map(c => ({ ...c })))
@@ -112,8 +101,7 @@ function App() {
               return g
             })
           }
-          // Apply step to B
-          const sB = stepsB[idx]
+          const sB = stepsB[next]
           if (sB) {
             setGridB(prev => {
               const g = prev.map(r => r.map(c => ({ ...c })))
@@ -123,7 +111,7 @@ function App() {
               return g
             })
           }
-          return idx + 1
+          return next + 1
         })
       }, computeAnimationDelay(speed))
     } else {
@@ -132,15 +120,13 @@ function App() {
     return () => clearInterval(intervalRef.current)
   }, [compareMode, isPlayingComp, stepsA, stepsB, speed])
 
-  // Play/Pause toggle
   const handleTogglePlay = () => {
     if (compareMode) {
-      // initialize runs
       if (stepsA.length === 0 && stepsB.length === 0) {
-        const { grid: gA, steps: sA, visitedCount: vA, pathCount: pA } = runAlgo(algoA, reduxGrid)
-        const { grid: gB, steps: sB, visitedCount: vB, pathCount: pB } = runAlgo(algoB, reduxGrid)
-        setGridA(gA); setStepsA(sA); setStatsA({ visitedNodes: vA, pathLength: pA })
-        setGridB(gB); setStepsB(sB); setStatsB({ visitedNodes: vB, pathLength: pB })
+        const { grid: gA, steps: sA } = runAlgo(algoA, reduxGrid)
+        const { grid: gB, steps: sB } = runAlgo(algoB, reduxGrid)
+        setGridA(gA); setStepsA(sA)
+        setGridB(gB); setStepsB(sB)
         setStepIndex(0)
       }
       setIsPlayingComp(p => !p)
@@ -149,47 +135,45 @@ function App() {
     }
   }
 
-  // Single‐step forward
   const handleStep = () => {
     if (compareMode) {
       if (stepsA.length === 0 && stepsB.length === 0) {
-        const { grid: gA, steps: sA, visitedCount: vA, pathCount: pA } = runAlgo(algoA, reduxGrid)
-        const { grid: gB, steps: sB, visitedCount: vB, pathCount: pB } = runAlgo(algoB, reduxGrid)
-        setGridA(gA); setStepsA(sA); setStatsA({ visitedNodes: vA, pathLength: pA })
-        setGridB(gB); setStepsB(sB); setStatsB({ visitedNodes: vB, pathLength: pB })
+        const { grid: gA, steps: sA } = runAlgo(algoA, reduxGrid)
+        const { grid: gB, steps: sB } = runAlgo(algoB, reduxGrid)
+        setGridA(gA); setStepsA(sA)
+        setGridB(gB); setStepsB(sB)
         setStepIndex(0)
       }
       clearInterval(intervalRef.current)
       setIsPlayingComp(false)
       setStepIndex(idx => {
-        const sA = stepsA[idx]
+        const prev = idx
+        const sA = stepsA[prev]; const sB = stepsB[prev]
         if (sA) {
-          setGridA(prev => {
-            const g = prev.map(r => r.map(c => ({ ...c })))
+          setGridA(prevG => {
+            const g = prevG.map(r => r.map(c => ({ ...c })))
             const { row, col } = sA.node
             if (sA.isPath) g[row][col].isPath = true
             else           g[row][col].isVisited = true
             return g
           })
         }
-        const sB = stepsB[idx]
         if (sB) {
-          setGridB(prev => {
-            const g = prev.map(r => r.map(c => ({ ...c })))
+          setGridB(prevG => {
+            const g = prevG.map(r => r.map(c => ({ ...c })))
             const { row, col } = sB.node
             if (sB.isPath) g[row][col].isPath = true
             else           g[row][col].isVisited = true
             return g
           })
         }
-        return idx + 1
+        return prev + 1
       })
     } else {
       dispatch(initializeSteps()).then(() => dispatch(processStep()))
     }
   }
 
-  // Single‐step backward
   const handleBack = () => {
     if (compareMode) {
       clearInterval(intervalRef.current)
@@ -197,20 +181,19 @@ function App() {
       setStepIndex(idx => {
         const prev = idx - 1
         if (prev < 0) return 0
-        const sA = stepsA[prev]
+        const sA = stepsA[prev]; const sB = stepsB[prev]
         if (sA) {
-          setGridA(prev => {
-            const g = prev.map(r => r.map(c => ({ ...c })))
+          setGridA(prevG => {
+            const g = prevG.map(r => r.map(c => ({ ...c })))
             const { row, col } = sA.node
             if (sA.isPath) g[row][col].isPath = false
             else           g[row][col].isVisited = false
             return g
           })
         }
-        const sB = stepsB[prev]
         if (sB) {
-          setGridB(prev => {
-            const g = prev.map(r => r.map(c => ({ ...c })))
+          setGridB(prevG => {
+            const g = prevG.map(r => r.map(c => ({ ...c })))
             const { row, col } = sB.node
             if (sB.isPath) g[row][col].isPath = false
             else           g[row][col].isVisited = false
@@ -223,6 +206,12 @@ function App() {
       dispatch(back())
     }
   }
+
+  // Derive stats for comparison mode
+  const visitedA = stepsA.filter(s => !s.isPath).length
+  const pathA    = stepsA.filter(s => s.isPath).length
+  const visitedB = stepsB.filter(s => !s.isPath).length
+  const pathB    = stepsB.filter(s => s.isPath).length
 
   return (
     <div className="app">
@@ -250,10 +239,7 @@ function App() {
           if (compareMode) {
             setGridA(reduxGrid)
             setGridB(reduxGrid)
-            setStepsA([])
-            setStepsB([])
-            setStatsA({ visitedNodes: 0, pathLength: null })
-            setStatsB({ visitedNodes: 0, pathLength: null })
+            setStepsA([]); setStepsB([])
             setStepIndex(0)
             setIsPlayingComp(false)
           }
@@ -263,10 +249,7 @@ function App() {
           if (compareMode) {
             setGridA(reduxGrid)
             setGridB(reduxGrid)
-            setStepsA([])
-            setStepsB([])
-            setStatsA({ visitedNodes: 0, pathLength: null })
-            setStatsB({ visitedNodes: 0, pathLength: null })
+            setStepsA([]); setStepsB([])
             setStepIndex(0)
             setIsPlayingComp(false)
           }
@@ -274,6 +257,8 @@ function App() {
         onSpeedChange={e => dispatch(changeSpeed(Number(e.target.value)))}
         speed={speed}
         statistics={statistics}
+        selectedAlgorithm={selectedAlgorithm}
+        onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}
         selectedAlgorithmA={algoA}
         selectedAlgorithmB={algoB}
         onAlgorithmChangeA={setAlgoA}
@@ -289,67 +274,50 @@ function App() {
         Help
       </button>
 
-      {/* InfoPanels */}
       {compareMode ? (
-        <div className="info-comparison">
-          <div className="info-half">
-            <InfoPanel selectedAlgorithm={algoA} />
+        <>
+          {/* InfoPanels for both algorithms */}
+          <div className="comparison-info-panels">
+            <div className="info-panel-half">
+              <InfoPanel selectedAlgorithm={algoA} />
+            </div>
+            <div className="info-panel-half">
+              <InfoPanel selectedAlgorithm={algoB} />
+            </div>
           </div>
-          <div className="info-half">
-            <InfoPanel selectedAlgorithm={algoB} />
-          </div>
-        </div>
-      ) : (
-        <InfoPanel selectedAlgorithm={algoA} />
-      )}
 
-      {/* Comparison description */}
-      {compareMode && (
-        <p className="comparison-description">
-          Compare how different algorithms traverse and find paths side-by-side.
-        </p>
-      )}
-
-      {/* Grids */}
-      <div className={`grid-wrapper${compareMode ? ' compare' : ''}`}>
-        {compareMode ? (
-          <>
+          <div className="grid-wrapper compare">
             <div className="grid-half">
               <h3>Algorithm A: {algoA.toUpperCase()}</h3>
               <Grid grid={gridA} />
+              {/* Stats beneath grid */}
+              <div className="stats-panel">
+                <span className="visited">Visited: {visitedA}</span>
+                <span className="path">Path: {pathA}</span>
+              </div>
             </div>
             <div className="grid-half">
               <h3>Algorithm B: {algoB.toUpperCase()}</h3>
               <Grid grid={gridB} />
+              {/* Stats beneath grid */}
+              <div className="stats-panel">
+                <span className="visited">Visited: {visitedB}</span>
+                <span className="path">Path: {pathB}</span>
+              </div>
             </div>
-          </>
-        ) : (
-          <Grid grid={reduxGrid} />
-        )}
-      </div>
-
-      {/* Per‐grid stats */}
-      {compareMode && (
-        <div className="stats-comparison">
-          <div className="stats-half">
-            <strong>Algorithm A</strong>
-            <p>Visited: {statsA.visitedNodes}</p>
-            <p>Path: {statsA.pathLength ?? '–'}</p>
           </div>
-          <div className="stats-half">
-            <strong>Algorithm B</strong>
-            <p>Visited: {statsB.visitedNodes}</p>
-            <p>Path: {statsB.pathLength ?? '–'}</p>
+        </>
+      ) : (
+        <>
+          <InfoPanel selectedAlgorithm={selectedAlgorithm} />
+          <div className="grid-wrapper">
+            <Grid grid={reduxGrid} />
           </div>
-        </div>
-      )}
-
-      {/* Single‐mode footer */}
-      {!compareMode && (
-        <Footer
-          visitedNodes={statistics.visitedNodes}
-          pathLength={statistics.pathLength}
-        />
+          <Footer
+            visitedNodes={statistics.visitedNodes}
+            pathLength={statistics.pathLength}
+          />
+        </>
       )}
 
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />

@@ -1,16 +1,22 @@
 /* src/styles/global.css */
+/*
+  • Retained existing layout and reset rules.
+  • Increased bottom margin on .stats-panel for more breathing room.
+  • Styles for the stats box and badges remain as before.
+*/
 
+/* ─── App Container ─────────────────────────────────────────────────────── */
 .app {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  align-items: stretch;     /* ← now children can fill 100% width */
+  align-items: stretch;
   font-family: Arial, sans-serif;
   background-color: #f7f9fc;
   min-height: 100vh;
-  width: 100%;              /* ← explicitly fill the viewport width */
+  width: 100%;
 }
 
+/* ─── Header & Footer ───────────────────────────────────────────────────── */
 header {
   width: 100%;
   text-align: center;
@@ -27,6 +33,7 @@ footer {
   text-align: center;
 }
 
+/* ─── No-Path Banner ───────────────────────────────────────────────────── */
 .no-path-banner {
   background-color: #ffebeb;
   color: #b00020;
@@ -39,73 +46,90 @@ footer {
   max-width: 600px;
 }
 
+/* ─── Global Reset & Root ───────────────────────────────────────────────── */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #fff;        /* make sure it’s not defaulting to dark gray */
+  background: #fff;
 }
 
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
+/* ─── Grid Wrapper & Compare Layout ─────────────────────────────────────── */
 .grid-wrapper {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* force this single child of .app to span the full width: */
   align-self: stretch;
   width: 100%;
 }
-
-/* When in compare mode, wrap two halves side by side */
 .grid-wrapper.compare {
-  display: flex;
   gap: 1rem;
 }
-
-/* Each half takes equal width */
 .grid-half {
   flex: 1;
 }
-
-/* Optional: ensure headings align */
 .grid-half h3 {
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
-/* Side-by-side info panels in comparison mode */
-.info-comparison {
+/* ─── Comparison InfoPanels ─────────────────────────────────────────────── */
+.comparison-info-panels {
   display: flex;
   gap: 1rem;
   margin: 1rem 0;
 }
-
-.info-half {
+.info-panel-half {
   flex: 1;
 }
 
-/* Comparison description */
-.comparison-description {
-  text-align: center;
-  font-style: italic;
-  margin-bottom: 1rem;
-}
-
-/* Side-by-side stats in comparison mode */
-.stats-comparison {
+/* ─── Stats Box ─────────────────────────────────────────────────────────── */
+/* Wraps the badges in a neat, bordered box with shadow */
+.stats-panel {
   display: flex;
+  justify-content: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  /* Added extra bottom margin for spacing below the box */
+  margin: 0.75rem auto 3rem;
+  max-width: 300px;
+
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.stats-half {
-  flex: 1;
-  text-align: center;
+/* ─── Badge Styling ─────────────────────────────────────────────────────── */
+.stats-panel span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Visited nodes badge */
+.stats-panel span.visited {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Path length badge */
+.stats-panel span.path {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+/* Icons before text */
+.stats-panel span.visited::before {
+  content: '👁️';
+  margin-right: 0.4rem;
+}
+.stats-panel span.path::before {
+  content: '🛤️';
+  margin-right: 0.4rem;
 }
