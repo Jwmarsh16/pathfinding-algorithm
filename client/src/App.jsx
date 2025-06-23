@@ -2,11 +2,9 @@
 /**
  * File: src/App.jsx
  *
- * Changes:
- * - Updated handleStepHoldStart and handleBackHoldStart to branch
- *   on compareMode:
- *   • In single mode, continue dispatching stepOnce()/back().
- *   • In compare mode, repeatedly call handleStep()/handleBack().
+ * Changes for parameterizing hold-to-repeat rate:
+ * - Replaced hard-coded 200 ms intervals in handleStepHoldStart and handleBackHoldStart
+ *   with computeAnimationDelay(speed) so holds respect the speed slider.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -178,18 +176,13 @@ function App() {
   // Hold‐to‐repeat for Step
   const handleStepHoldStart = () => {
     clearInterval(stepHoldRef.current)
+    const delay = computeAnimationDelay(speed)
     if (compareMode) {
-      // compare‐mode repeat
       handleStep()
-      stepHoldRef.current = setInterval(() => {
-        handleStep()
-      }, 200)
+      stepHoldRef.current = setInterval(() => handleStep(), delay)
     } else {
-      // single‐mode repeat
       dispatch(stepOnce())
-      stepHoldRef.current = setInterval(() => {
-        dispatch(stepOnce())
-      }, 200)
+      stepHoldRef.current = setInterval(() => dispatch(stepOnce()), delay)
     }
   }
 
@@ -227,16 +220,13 @@ function App() {
   // Hold‐to‐repeat for Back
   const handleBackHoldStart = () => {
     clearInterval(backHoldRef.current)
+    const delay = computeAnimationDelay(speed)
     if (compareMode) {
       handleBack()
-      backHoldRef.current = setInterval(() => {
-        handleBack()
-      }, 200)
+      backHoldRef.current = setInterval(() => handleBack(), delay)
     } else {
       dispatch(back())
-      backHoldRef.current = setInterval(() => {
-        dispatch(back())
-      }, 200)
+      backHoldRef.current = setInterval(() => dispatch(back()), delay)
     }
   }
 
