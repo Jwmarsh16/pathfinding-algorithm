@@ -2,8 +2,8 @@
 /**
  * File: src/components/Grid/Grid.jsx
  *
- * Added `showControls` prop so that grid controls (configuration select
- * and “Generate Random Maze” button) only render when `showControls` is true.
+ * Always renders the grid-controls element to preserve spacing.
+ * Uses CSS visibility to show or hide the controls based on showControls.
  */
 
 import React, { useState } from 'react'
@@ -60,7 +60,7 @@ function Grid({ grid, showControls = true }) {
     setIsEndNodeDragged(false)
   }
 
-  const loadPredefinedGrid = type => {
+  const loadPredefinedGrid = (type) => {
     const factory = predefinedGrids[type]
     if (!factory) return
     dispatch(resetPathThunk())
@@ -69,28 +69,35 @@ function Grid({ grid, showControls = true }) {
 
   return (
     <div>
-      {showControls && (
-        <div className="grid-controls">
-          <select
-            onChange={e => loadPredefinedGrid(e.target.value)}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select Grid Configuration
-            </option>
-            <option value="empty">Empty Grid</option>
-            <option value="smallMaze">Small Maze</option>
-            <option value="recursiveDivision">Recursive Division Maze</option>
-            <option value="prims">Prim’s Maze</option>
-            <option value="ellers">Eller’s Maze</option>
-            <option value="random">Random Maze</option>
-          </select>
-          <button type="button" onClick={() => loadPredefinedGrid('random')}>
-            Generate Random Maze
-          </button>
-        </div>
-      )}
-      <div className="visualizer-canvas" onMouseLeave={handleMouseUp}>
+      <div
+        className="grid-controls"
+        style={{ visibility: showControls ? 'visible' : 'hidden' }}
+      >
+        <select
+          onChange={e => loadPredefinedGrid(e.target.value)}
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select Grid Configuration
+          </option>
+          <option value="empty">Empty Grid</option>
+          <option value="smallMaze">Small Maze</option>
+          <option value="recursiveDivision">Recursive Division Maze</option>
+          <option value="prims">Prim’s Maze</option>
+          <option value="ellers">Eller’s Maze</option>
+          <option value="random">Random Maze</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => loadPredefinedGrid('random')}
+        >
+          Generate Random Maze
+        </button>
+      </div>
+      <div
+        className="visualizer-canvas"
+        onMouseLeave={handleMouseUp}
+      >
         {grid.map((rowArr, rowIndex) => (
           <div key={rowIndex} className="grid-row">
             {rowArr.map((node, colIndex) => (

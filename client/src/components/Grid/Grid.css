@@ -34,6 +34,11 @@
   margin: 0 auto;
 }
 
+/* In comparison mode, align both grids to the top */
+.grid-wrapper.compare {
+  align-items: flex-start;
+}
+
 .node {
   /* square cells: height matches width */
   width: 100%;

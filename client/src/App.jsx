@@ -3,7 +3,7 @@
  * File: src/App.jsx
  *
  * Updated so that in comparison mode only the first grid shows its
- * controls (via showControls prop), while the second grid hides them.
+ * controls (via showControls), while the second grid hides them.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -323,7 +323,7 @@ function App() {
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedB}</span>
                 <span className="path">Path: {pathB}</span>
-              </div>
+                </div>
             </div>
           </div>
         </>
