@@ -2,9 +2,8 @@
 /**
  * File: src/App.jsx
  *
- * Changes for parameterizing hold-to-repeat rate:
- * - Replaced hard-coded 200 ms intervals in handleStepHoldStart and handleBackHoldStart
- *   with computeAnimationDelay(speed) so holds respect the speed slider.
+ * Updated so that in comparison mode only the first grid shows its
+ * controls (via showControls prop), while the second grid hides them.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -173,7 +172,6 @@ function App() {
     }
   }
 
-  // Hold‐to‐repeat for Step
   const handleStepHoldStart = () => {
     clearInterval(stepHoldRef.current)
     const delay = computeAnimationDelay(speed)
@@ -217,7 +215,6 @@ function App() {
     }
   }
 
-  // Hold‐to‐repeat for Back
   const handleBackHoldStart = () => {
     clearInterval(backHoldRef.current)
     const delay = computeAnimationDelay(speed)
@@ -234,7 +231,6 @@ function App() {
     clearInterval(backHoldRef.current)
   }
 
-  // Derive stats for comparison mode
   const visitedA = stepsA.filter(s => !s.isPath).length
   const pathA    = stepsA.filter(s => s.isPath).length
   const visitedB = stepsB.filter(s => !s.isPath).length
@@ -311,10 +307,11 @@ function App() {
               <InfoPanel selectedAlgorithm={algoB} />
             </div>
           </div>
+
           <div className="grid-wrapper compare">
             <div className="grid-half">
               <h3>Algorithm A: {algoA.toUpperCase()}</h3>
-              <Grid grid={gridA} />
+              <Grid grid={gridA} showControls={true} />
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedA}</span>
                 <span className="path">Path: {pathA}</span>
@@ -322,7 +319,7 @@ function App() {
             </div>
             <div className="grid-half">
               <h3>Algorithm B: {algoB.toUpperCase()}</h3>
-              <Grid grid={gridB} />
+              <Grid grid={gridB} showControls={false} />
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedB}</span>
                 <span className="path">Path: {pathB}</span>
@@ -334,7 +331,7 @@ function App() {
         <>
           <InfoPanel selectedAlgorithm={selectedAlgorithm} />
           <div className="grid-wrapper">
-            <Grid grid={reduxGrid} />
+            <Grid grid={reduxGrid} showControls={true} />
           </div>
           <Footer
             visitedNodes={statistics.visitedNodes}
