@@ -1,58 +1,87 @@
 /* src/styles/global.css */
-/*
-  • Retained existing layout and reset rules.
-  • Increased bottom margin on .stats-panel for more breathing room.
-  • Styles for the stats box and badges remain as before.
-*/
+
+/* ─── Theme Variables & Typography ─────────────────────────────────────── */
+:root {
+  /* Color Palette */
+  --bg-color: #121212;
+  --surface-color: rgba(255, 255, 255, 0.1);
+  --primary-color: #00e5ff;
+  --accent-color: #00ff6a;
+  --error-color: #cf6679;
+  --text-color: #e0e0e0;
+  --text-secondary: #bbbbbb;
+
+  /* Node/Grid Specifics */
+  --grid-bg: #000000;
+  --node-bg: #444444;
+  --node-border: #888888;
+  --node-visited-bg: #888888;
+  --node-path-bg: #007ea7;
+  --node-wall-bg: #000000;
+
+  /* Blur for glassmorphism */
+  --backdrop-blur: 10px;
+
+  /* Fonts */
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Source Code Pro', monospace;
+}
+
+/* ─── Global Reset & Base ───────────────────────────────────────────────── */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
 
 /* ─── App Container ─────────────────────────────────────────────────────── */
 .app {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  font-family: Arial, sans-serif;
-  background-color: #f7f9fc;
   min-height: 100vh;
   width: 100%;
+  background-color: var(--bg-color);
 }
 
 /* ─── Header & Footer ───────────────────────────────────────────────────── */
 header {
   width: 100%;
   text-align: center;
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
+  padding: 1rem;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 footer {
   margin-top: auto;
-  padding: 10px;
-  background-color: #f1f1f1;
+  padding: 1rem;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
   width: 100%;
   text-align: center;
+  color: var(--text-secondary);
 }
 
 /* ─── No-Path Banner ───────────────────────────────────────────────────── */
 .no-path-banner {
-  background-color: #ffebeb;
-  color: #b00020;
+  background-color: var(--error-color);
+  color: #fff;
   padding: 0.75rem 1rem;
   text-align: center;
   font-weight: 600;
-  border: 1px solid #b00020;
   border-radius: 4px;
   margin: 0.5rem auto;
   max-width: 600px;
-}
-
-/* ─── Global Reset & Root ───────────────────────────────────────────────── */
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background: #fff;
 }
 
 /* ─── Grid Wrapper & Compare Layout ─────────────────────────────────────── */
@@ -64,15 +93,21 @@ html, body, #root {
   align-self: stretch;
   width: 100%;
 }
+
 .grid-wrapper.compare {
   gap: 1rem;
 }
+
 .grid-half {
   flex: 1;
 }
+
 .grid-half h3 {
   text-align: center;
   margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--accent-color);
 }
 
 /* ─── Comparison InfoPanels ─────────────────────────────────────────────── */
@@ -81,28 +116,25 @@ html, body, #root {
   gap: 1rem;
   margin: 1rem 0;
 }
+
 .info-panel-half {
   flex: 1;
 }
 
 /* ─── Stats Box ─────────────────────────────────────────────────────────── */
-/* Wraps the badges in a neat, bordered box with shadow */
 .stats-panel {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  /* Added extra bottom margin for spacing below the box */
   margin: 0.75rem auto 3rem;
   max-width: 300px;
-
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* ─── Badge Styling ─────────────────────────────────────────────────────── */
 .stats-panel span {
   display: inline-flex;
   align-items: center;
@@ -110,26 +142,67 @@ html, body, #root {
   border-radius: 12px;
   font-weight: bold;
   font-size: 0.9rem;
+  font-family: var(--font-mono);
 }
 
-/* Visited nodes badge */
 .stats-panel span.visited {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: rgba(0, 255, 106, 0.1);
+  color: #00ff6a;
 }
 
-/* Path length badge */
 .stats-panel span.path {
-  background-color: #fce4ec;
-  color: #c2185b;
+  background-color: rgba(0, 229, 255, 0.1);
+  color: #00e5ff;
 }
 
-/* Icons before text */
-.stats-panel span.visited::before {
-  content: '👁️';
-  margin-right: 0.4rem;
+/* ─── Grid Canvas & Nodes ───────────────────────────────────────────────── */
+.visualizer-canvas {
+  display: grid;
+  grid-template-columns: repeat(50, minmax(16px, 1fr));
+  grid-auto-rows: minmax(16px, 1fr);
+  gap: 1px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--grid-bg);
+  padding: 10px;
+  border-radius: 8px;
 }
-.stats-panel span.path::before {
-  content: '🛤️';
-  margin-right: 0.4rem;
+
+.grid-row {
+  display: contents;
+}
+
+.node {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--node-border);
+  background-color: var(--node-bg);
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.node-wall    { background-color: var(--node-wall-bg); }
+.node-start   { background-color: var(--accent-color); }
+.node-end     { background-color: var(--primary-color); }
+.node-visited { background-color: var(--node-visited-bg); }
+.node-path    { background-color: var(--node-path-bg); }
+
+.node:hover {
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* ─── Help Button ─────────────────────────────────────────────────────── */
+.help-button {
+  background: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.help-button:hover {
+  box-shadow: 0 0 8px var(--primary-color);
 }

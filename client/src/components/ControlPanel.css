@@ -1,66 +1,143 @@
 /* src/components/ControlPanel.css */
 
+/* Use inline-grid to shrink-wrap first row (left+center),
+   and place stats in a second row centered. */
 .control-panel {
+  display: inline-grid;
+  grid-template-areas:
+    "left center"
+    "right right";
+  grid-auto-columns: max-content;
+  grid-auto-rows: auto;
+  gap: 1rem;
+  padding: 1rem;
+  margin: 1rem auto;
+  box-sizing: border-box;
+
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Assign grid areas */
+.control-panel__left {
+  grid-area: left;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ddd;
-  width: 90%;
-  max-width: 1000px;
-  margin: 0.5rem auto;
-  box-sizing: border-box;
 }
 
+.control-panel__center {
+  grid-area: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-panel__right {
+  grid-area: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Comparison mode doesn’t change layout; grid handles both cases smoothly */
+
+/* Left group styles */
+.control-panel__left .control-panel__compare-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.control-panel__left select {
+  padding: 0.25rem 0.5rem;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  backdrop-filter: blur(var(--backdrop-blur));
+  font-size: 0.9rem;
+}
+
+/* Buttons */
 .control-panel button {
   padding: 0.5rem 1rem;
-  border: 1px solid #4caf50;
-  background-color: #4caf50;
-  color: #ffffff;
-  font-size: 0.9rem;
-  border-radius: 4px;
+  border: none;
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.control-panel button:hover {
-  background-color: #45a047;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
 }
 
-/* Make the speed slider label and track more visible */
+.control-panel button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px var(--primary-color);
+}
+
+/* Slider */
 .control-panel__slider {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
-  font-weight: 600;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 .control-panel__slider input[type="range"] {
   width: 140px;
-  cursor: pointer;
-  /* modern browsers support accent-color to tint the slider */
-  accent-color: #4caf50;
+  accent-color: var(--primary-color);
 }
 
-/* Dropdown styling */
-.control-panel__dropdown {
+/* Stats badges */
+.control-panel__stats {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.9rem;
-}
-.control-panel__dropdown select {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
-}
-
-/* Stats on the right */
-.control-panel__stats {
-  margin-left: auto;
-  display: flex;
   gap: 1rem;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text-secondary);
+}
+
+.control-panel__stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Inputs & selects blend */
+.control-panel input,
+.control-panel select {
+  background: transparent;
+  color: var(--text-color);
+}
+
+/* Responsive fallback */
+@media (max-width: 800px) {
+  .control-panel {
+    display: grid;
+    grid-template-areas:
+      "left"
+      "center"
+      "right";
+    grid-auto-columns: auto;
+    gap: 0.5rem;
+    width: auto;
+  }
+  .control-panel__left,
+  .control-panel__center,
+  .control-panel__right {
+    justify-content: center;
+    margin: 0.5rem 0;
+  }
+  .control-panel__slider input[type="range"] {
+    width: 100%;
+  }
 }
