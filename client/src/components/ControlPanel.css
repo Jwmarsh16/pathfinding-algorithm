@@ -45,8 +45,6 @@
   margin-top: 0.5rem;
 }
 
-/* Comparison mode doesn’t change layout; grid handles both cases smoothly */
-
 /* Left group styles */
 .control-panel__left .control-panel__compare-toggle {
   display: flex;
@@ -58,15 +56,24 @@
 
 /* Algorithm select dropdowns */
 .control-panel__left select {
-  /* ensure dropdown matches button look */
-  padding: 0.5rem 0.75rem;          /* match button padding */
+  /* match button padding and sizing */
+  padding: 0.5rem 0.75rem;
+  min-width: 8rem;
   background-color: var(--surface-color);
-  color: var(--text-color);
+  color: var(--primary-color);      /* keep selected text as primary */
   border: 1px solid var(--accent-color);
   border-radius: 6px;
   font-size: 0.9rem;
-  cursor: pointer;                 /* pointer on hover */
+  font-weight: 600;
+  cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Style the dropdown options */
+.control-panel__left select option {
+  color: black;                     /* make all options black */
+  background-color: var(--surface-color);
+  font-weight: 600;
 }
 
 /* Hover & focus styles for select */
@@ -122,9 +129,6 @@
   align-items: center;
   gap: 0.25rem;
 }
-
-/* Remove generic input/select overrides so our dedicated styles apply */
-/* (previously: .control-panel input, .control-panel select { background: transparent; }) */
 
 /* Responsive fallback */
 @media (max-width: 800px) {
