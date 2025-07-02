@@ -1,4 +1,4 @@
-/* src/components/ControlPanel.css */
+/* File: src/components/ControlPanel.css */
 
 /* Use inline-grid to shrink-wrap first row (left+center),
    and place stats in a second row centered. */
@@ -56,14 +56,25 @@
   color: var(--text-color);
 }
 
+/* Algorithm select dropdowns */
 .control-panel__left select {
-  padding: 0.25rem 0.5rem;
+  /* ensure dropdown matches button look */
+  padding: 0.5rem 0.75rem;          /* match button padding */
   background-color: var(--surface-color);
   color: var(--text-color);
   border: 1px solid var(--accent-color);
   border-radius: 6px;
-  backdrop-filter: blur(var(--backdrop-blur));
   font-size: 0.9rem;
+  cursor: pointer;                 /* pointer on hover */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover & focus styles for select */
+.control-panel__left select:hover,
+.control-panel__left select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px var(--accent-color);
 }
 
 /* Buttons */
@@ -112,12 +123,8 @@
   gap: 0.25rem;
 }
 
-/* Inputs & selects blend */
-.control-panel input,
-.control-panel select {
-  background: transparent;
-  color: var(--text-color);
-}
+/* Remove generic input/select overrides so our dedicated styles apply */
+/* (previously: .control-panel input, .control-panel select { background: transparent; }) */
 
 /* Responsive fallback */
 @media (max-width: 800px) {
