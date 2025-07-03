@@ -1,4 +1,3 @@
-// src/components/HelpModal.jsx
 import React from 'react'
 import './HelpModal.css'
 
@@ -22,18 +21,48 @@ function HelpModal({ open, onClose }) {
         <h2>How to Interact</h2>
         <ul>
           <li>Click or drag on cells to toggle walls.</li>
-          <li>Click and drag the green start or red end nodes to move them.</li>
-          <li>Use the Play/Pause/Step/Back controls to run or step through the algorithm.</li>
-          <li>Adjust speed with the slider, and pick your algorithm from the dropdown.</li>
+          <li>
+            Click and drag the{' '}
+            <span
+              style={{ color: 'var(--accent-color)', fontWeight: 600 }}
+            >
+              start node
+            </span>{' '}
+            or{' '}
+            <span
+              style={{ color: 'var(--primary-color)', fontWeight: 600 }}
+            >
+              end node
+            </span>{' '}
+            to move them.
+          </li>
+          <li>
+            Use the Play/Pause/Step/Back controls to run or step through
+            the algorithm.
+          </li>
+          <li>
+            Adjust speed with the slider, and pick your algorithm from
+            the dropdown.
+          </li>
         </ul>
 
         <h3>Color Legend</h3>
         <ul>
-          <li><span className="legend-box start" /> Start node (green)</li>
-          <li><span className="legend-box end" /> End node (red)</li>
-          <li><span className="legend-box wall" /> Wall (black)</li>
-          <li><span className="legend-box visited" /> Visited nodes (lightblue)</li>
-          <li><span className="legend-box path" /> Final path (yellow)</li>
+          <li>
+            <span className="legend-box start" /> Start node
+          </li>
+          <li>
+            <span className="legend-box end" /> End node
+          </li>
+          <li>
+            <span className="legend-box wall" /> Wall
+          </li>
+          <li>
+            <span className="legend-box visited" /> Visited nodes
+          </li>
+          <li>
+            <span className="legend-box path" /> Final path
+          </li>
         </ul>
 
         <h3>Learn More</h3>
