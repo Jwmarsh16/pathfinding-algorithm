@@ -29,7 +29,7 @@ function Header() {
     <header className="header">
       <h1>Pathfinder Algorithm Visualizer</h1>
       <nav>
-        <a href="#about">About</a>
+        <a href="#about"></a>
         <a href="#credits"></a>
       </nav>
       <button

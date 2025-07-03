@@ -1,8 +1,7 @@
 /* File: src/styles/global.css
  *
- * Add light mode overrides that apply when <body> has .theme-light.
- * Core dark-theme variables remain under :root; light-theme variables
- * override these when body.theme-light is present.
+ * Update light theme overrides: set primary-color to navy,
+ * accent-color to gold, and node-visited-bg to gold.
  */
 
 /* ─── Theme Variables & Typography ─────────────────────────────────────── */
@@ -151,8 +150,8 @@ footer {
 }
 
 .stats-panel span.visited {
-  background-color: rgba(0, 255, 106, 0.1);
-  color: #00ff6a;
+  background-color: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
 }
 
 .stats-panel span.path {
@@ -182,10 +181,17 @@ body.theme-light {
   --text-color: #121212;
   --text-secondary: #444444;
   --surface-color: rgba(0, 0, 0, 0.05);
+  --primary-color: #2a4d69;       /* navy blue */
+  --accent-color: #00f7ff;         /* green */
   --grid-bg: #f0f0f0;
-  --node-bg: #e0e0e0;
+  --node-bg: #e0e0e000;
   --node-border: #cccccc;
-  --node-visited-bg: #bbbbbb;
+  --node-visited-bg: #95c1db;      /* gold */
   --node-path-bg: #007ea7;
   --node-wall-bg: #000000;
+}
+
+/* ─── Animated Theme Transition ───────────────────────────────────────── */
+body, .app, header, footer {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

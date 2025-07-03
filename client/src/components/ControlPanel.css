@@ -1,4 +1,8 @@
-/* File: src/components/ControlPanel.css */
+/* File: src/components/ControlPanel.css
+ *
+ * Add smooth transitions on background, border, box-shadow, and color
+ * so theme changes animate across the control panel.
+ */
 
 /* Use inline-grid to shrink-wrap first row (left+center),
    and place stats in a second row centered. */
@@ -19,6 +23,10 @@
   border: 1px solid var(--primary-color);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
 }
 
 /* Assign grid areas */
@@ -54,46 +62,38 @@
   color: var(--text-color);
 }
 
-/* Algorithm select dropdown */
+/* Algorithm select dropdowns */
 .control-panel__left select {
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  min-width: 8rem;
+  padding: 0.5rem 0.75rem;
   background-color: var(--surface-color);
-  color: var(--primary-color);    /* selected text in primary-color */
+  color: var(--primary-color);
   border: 1px solid var(--accent-color);
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  /* Use white arrow for visibility on dark background */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width='10'%20height='7'%20viewBox='0%200%2010%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20fill='%23FFFFFF'%20d='M0%200l5%207%205-7H0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 0.65rem;
 }
 
 /* Dropdown options */
 .control-panel__left select option {
-  color: black;                   /* list items in black */
+  color: black;
   background-color: var(--surface-color);
   font-weight: 600;
 }
 
-/* Highlight hovered option */
 .control-panel__left select option:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Show selected option in primary-color */
 .control-panel__left select option:checked {
   color: var(--primary-color);
 }
 
-/* Hover & focus states for select */
 .control-panel__left select:hover,
 .control-panel__left select:focus {
   outline: none;
@@ -110,7 +110,10 @@
   font-weight: 600;
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  transition: transform 0.1s ease,
+              box-shadow 0.3s ease,
+              background-color 0.3s ease,
+              color 0.3s ease;
 }
 
 .control-panel button:hover {
@@ -145,6 +148,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+/* Inputs & selects blend */
+.control-panel input,
+.control-panel select {
+  background: transparent;
+  color: var(--text-color);
 }
 
 /* Responsive fallback */
