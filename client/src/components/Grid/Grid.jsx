@@ -1,9 +1,7 @@
-// src/components/Grid/Grid.jsx
-/**
- * File: src/components/Grid/Grid.jsx
+/* File: src/components/Grid/Grid.jsx
  *
- * Always renders the grid-controls element to preserve spacing.
- * Uses CSS visibility to show or hide the controls based on showControls.
+ * Updated grid-controls select and button styling to match the
+ * app’s theme and improve UI consistency.
  */
 
 import React, { useState } from 'react'
@@ -82,7 +80,9 @@ function Grid({ grid, showControls = true }) {
           </option>
           <option value="empty">Empty Grid</option>
           <option value="smallMaze">Small Maze</option>
-          <option value="recursiveDivision">Recursive Division Maze</option>
+          <option value="recursiveDivision">
+            Recursive Division Maze
+          </option>
           <option value="prims">Prim’s Maze</option>
           <option value="ellers">Eller’s Maze</option>
           <option value="random">Random Maze</option>
@@ -105,7 +105,9 @@ function Grid({ grid, showControls = true }) {
                 key={`${rowIndex}-${colIndex}`}
                 node={node}
                 onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                onMouseEnter={() =>
+                  handleMouseEnter(rowIndex, colIndex)
+                }
                 onMouseUp={handleMouseUp}
               />
             ))}

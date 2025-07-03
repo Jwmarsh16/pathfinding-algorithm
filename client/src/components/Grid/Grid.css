@@ -1,4 +1,51 @@
-/* File: src/components/Grid/Grid.css */
+/* File: src/components/Grid/Grid.css
+ *
+ * Added styles for grid-controls select dropdown and generate
+ * random maze button to align with project theme and enhance
+ * interactivity.
+ */
+
+.grid-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.grid-controls select {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid-controls select:hover,
+.grid-controls select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px var(--accent-color);
+}
+
+.grid-controls button {
+  padding: 0.5rem 1rem;
+  background-color: var(--surface-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.grid-controls button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px var(--primary-color);
+}
+
+/* Existing grid and node styles */
 
 .visualizer-canvas {
   display: grid;
