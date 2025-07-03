@@ -54,7 +54,7 @@
   color: var(--text-color);
 }
 
-/* Algorithm select dropdowns */
+/* Algorithm select dropdown */
 .control-panel__left select {
   padding: 0.5rem 2rem 0.5rem 0.75rem;
   min-width: 8rem;
@@ -66,10 +66,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  appearance: none;               /* remove native arrow */
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width='10'%20height='7'%20viewBox='0%200%2010%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20fill='currentColor'%20d='M0%200l5%207%205-7H0z'/%3E%3C/svg%3E");
+  /* Use white arrow for visibility on dark background */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width='10'%20height='7'%20viewBox='0%200%2010%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20fill='%23FFFFFF'%20d='M0%200l5%207%205-7H0z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 0.65rem;
@@ -82,7 +83,7 @@
   font-weight: 600;
 }
 
-/* Highlight the hovered option */
+/* Highlight hovered option */
 .control-panel__left select option:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }

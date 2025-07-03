@@ -1,25 +1,43 @@
+/* File: src/components/InfoPanel.css */
+
 .info-panel {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   padding: 1rem;
   margin: 1rem 0;
-  border-radius: 4px;
+  color: var(--text-color);
+  transition: box-shadow 0.2s ease;
+}
+
+.info-panel:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
 .info-panel__title {
   margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  color: #333;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .info-panel__desc {
   margin: 0 0 0.75rem;
-  color: #555;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 .info-panel__complexities {
   display: flex;
   gap: 1.5rem;
   font-size: 0.9rem;
-  color: #444;
+  color: var(--text-secondary);
+}
+
+.info-panel__complexities span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
