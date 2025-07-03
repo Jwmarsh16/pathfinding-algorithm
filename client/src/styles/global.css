@@ -1,4 +1,9 @@
-/* File: src/styles/global.css */
+/* File: src/styles/global.css
+ *
+ * Add light mode overrides that apply when <body> has .theme-light.
+ * Core dark-theme variables remain under :root; light-theme variables
+ * override these when body.theme-light is present.
+ */
 
 /* ─── Theme Variables & Typography ─────────────────────────────────────── */
 :root {
@@ -169,4 +174,18 @@ footer {
 
 .help-button:hover {
   box-shadow: 0 0 8px var(--primary-color);
+}
+
+/* ─── Light Theme Overrides ────────────────────────────────────────────── */
+body.theme-light {
+  --bg-color: #ffffff;
+  --text-color: #121212;
+  --text-secondary: #444444;
+  --surface-color: rgba(0, 0, 0, 0.05);
+  --grid-bg: #f0f0f0;
+  --node-bg: #e0e0e0;
+  --node-border: #cccccc;
+  --node-visited-bg: #bbbbbb;
+  --node-path-bg: #007ea7;
+  --node-wall-bg: #000000;
 }

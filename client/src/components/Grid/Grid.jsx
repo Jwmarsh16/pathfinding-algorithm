@@ -1,7 +1,7 @@
 /* File: src/components/Grid/Grid.jsx
  *
- * Updated grid-controls select and button styling to match the
- * app’s theme and improve UI consistency.
+ * Change the Generate button so it reruns the currently selected maze
+ * preset (falling back to random) instead of always using the random maze.
  */
 
 import React, { useState } from 'react'
@@ -27,6 +27,7 @@ function Grid({ grid, showControls = true }) {
   const [isMousePressed, setIsMousePressed] = useState(false)
   const [isStartNodeDragged, setIsStartNodeDragged] = useState(false)
   const [isEndNodeDragged, setIsEndNodeDragged] = useState(false)
+  const [selectedPreset, setSelectedPreset] = useState('')
 
   const predefinedGrids = {
     empty: createEmptyGrid,
@@ -37,32 +38,16 @@ function Grid({ grid, showControls = true }) {
     random: createRandomMaze
   }
 
-  const handleMouseDown = (row, col) => {
-    const node = grid[row][col]
-    if (node.isStart) setIsStartNodeDragged(true)
-    else if (node.isEnd) setIsEndNodeDragged(true)
-    else dispatch(toggleWall({ row, col }))
-    setIsMousePressed(true)
-  }
-
-  const handleMouseEnter = (row, col) => {
-    if (!isMousePressed) return
-    if (isStartNodeDragged) dispatch(moveStart({ row, col }))
-    else if (isEndNodeDragged) dispatch(moveEnd({ row, col }))
-    else dispatch(toggleWall({ row, col }))
-  }
-
-  const handleMouseUp = () => {
-    setIsMousePressed(false)
-    setIsStartNodeDragged(false)
-    setIsEndNodeDragged(false)
-  }
-
   const loadPredefinedGrid = (type) => {
     const factory = predefinedGrids[type]
     if (!factory) return
     dispatch(resetPathThunk())
     dispatch(loadPreset(factory()))
+  }
+
+  const handlePresetChange = (type) => {
+    setSelectedPreset(type)
+    loadPredefinedGrid(type)
   }
 
   return (
@@ -72,31 +57,31 @@ function Grid({ grid, showControls = true }) {
         style={{ visibility: showControls ? 'visible' : 'hidden' }}
       >
         <select
-          onChange={e => loadPredefinedGrid(e.target.value)}
-          defaultValue=""
+          value={selectedPreset}
+          onChange={e => handlePresetChange(e.target.value)}
         >
           <option value="" disabled>
             Select Grid Configuration
           </option>
           <option value="empty">Empty Grid</option>
           <option value="smallMaze">Small Maze</option>
-          <option value="recursiveDivision">
-            Recursive Division Maze
-          </option>
+          <option value="recursiveDivision">Recursive Division Maze</option>
           <option value="prims">Prim’s Maze</option>
           <option value="ellers">Eller’s Maze</option>
           <option value="random">Random Maze</option>
         </select>
         <button
           type="button"
-          onClick={() => loadPredefinedGrid('random')}
+          onClick={() =>
+            loadPredefinedGrid(selectedPreset || 'random')
+          }
         >
-          Generate Random Maze
+          Generate Maze
         </button>
       </div>
       <div
         className="visualizer-canvas"
-        onMouseLeave={handleMouseUp}
+        onMouseLeave={() => setIsMousePressed(false)}
       >
         {grid.map((rowArr, rowIndex) => (
           <div key={rowIndex} className="grid-row">
@@ -104,11 +89,23 @@ function Grid({ grid, showControls = true }) {
               <Node
                 key={`${rowIndex}-${colIndex}`}
                 node={node}
-                onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                onMouseEnter={() =>
-                  handleMouseEnter(rowIndex, colIndex)
-                }
-                onMouseUp={handleMouseUp}
+                onMouseDown={() => {
+                  if (node.isStart) setIsStartNodeDragged(true)
+                  else if (node.isEnd) setIsEndNodeDragged(true)
+                  else dispatch(toggleWall({ row: rowIndex, col: colIndex }))
+                  setIsMousePressed(true)
+                }}
+                onMouseEnter={() => {
+                  if (!isMousePressed) return
+                  if (isStartNodeDragged) dispatch(moveStart({ row: rowIndex, col: colIndex }))
+                  else if (isEndNodeDragged) dispatch(moveEnd({ row: rowIndex, col: colIndex }))
+                  else dispatch(toggleWall({ row: rowIndex, col: colIndex }))
+                }}
+                onMouseUp={() => {
+                  setIsMousePressed(false)
+                  setIsStartNodeDragged(false)
+                  setIsEndNodeDragged(false)
+                }}
               />
             ))}
           </div>
