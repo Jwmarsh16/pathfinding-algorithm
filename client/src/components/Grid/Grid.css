@@ -1,25 +1,60 @@
 /* File: src/components/Grid/Grid.css
  *
- * Added styles for grid-controls select dropdown and generate
- * random maze button to align with project theme and enhance
- * interactivity.
+ * Prevent select label truncation and style dropdown options:
+ * - Increase min-width and disable shrinking to show full text
+ * - Use primary-color for closed select text
+ * - Render options in black, highlight checked in primary-color
+ * - Keep custom arrow icon tinted to accent-color
+ * - Wrap controls responsively on small screens
  */
 
 .grid-controls {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;              /* allow controls to wrap on small screens */
+  align-items: center;
   margin-bottom: 1rem;
 }
 
 .grid-controls select {
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem; /* space for custom arrow */
+  min-width: 14rem;                   /* prevent label truncation */
+  flex-shrink: 0;                     /* do not shrink when wrapped */
   background-color: var(--surface-color);
-  color: var(--text-color);
+  color: var(--primary-color);        /* closed select text in primary-color */
   border: 1px solid var(--accent-color);
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+              background-color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  /* custom arrow icon tinted to accent-color */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width='10'%20height='7'%20viewBox='0%200%2010%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20fill='%2300ff6a'%20d='M0%200l5%207%205-7H0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.65rem;
+}
+
+/* Dropdown menu options */
+.grid-controls select option {
+  background-color: var(--surface-color);
+  color: black;                   /* menu items in black */
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Highlight hovered option */
+.grid-controls select option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tint the currently selected option */
+.grid-controls select option:checked {
+  color: var(--primary-color);
+  background-color: var(--surface-color);
 }
 
 .grid-controls select:hover,
@@ -43,6 +78,18 @@
 .grid-controls button:hover {
   transform: scale(1.05);
   box-shadow: 0 0 8px var(--primary-color);
+}
+
+/* Responsive fallback: stack controls vertically */
+@media (max-width: 600px) {
+  .grid-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .grid-controls select,
+  .grid-controls button {
+    width: 100%;
+  }
 }
 
 /* Existing grid and node styles */

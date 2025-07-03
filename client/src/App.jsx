@@ -1,9 +1,7 @@
-// src/App.jsx
-/**
- * File: src/App.jsx
+/* File: src/App.jsx
  *
- * Updated so that in comparison mode only the first grid shows its
- * controls (via showControls), while the second grid hides them.
+ * Reset only the corresponding grid’s path when its algorithm changes
+ * in comparison mode, and still reset path on single-mode algorithm change.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -58,7 +56,7 @@ function App() {
   const isPlayingRd       = useSelector(s => s.pathfinder.isPlaying)
   const selectedAlgorithm = useSelector(s => s.pathfinder.selectedAlgorithm)
 
-  const [helpOpen, setHelpOpen] = useState(false)
+  const [helpOpen, setHelpOpen]           = useState(false)
   const [compareMode, setCompareMode]     = useState(false)
   const [algoA, setAlgoA]                 = useState('bfs')
   const [algoB, setAlgoB]                 = useState('dfs')
@@ -72,6 +70,26 @@ function App() {
   const intervalRef  = useRef(null)
   const stepHoldRef  = useRef(null)
   const backHoldRef  = useRef(null)
+
+  // Single-mode algorithm change: set and reset path
+  const handleSingleAlgoChange = algo => {
+    dispatch(setAlgorithm(algo))
+    dispatch(resetPathThunk())
+  }
+
+  // Comparison-mode Algorithm A change: reset only grid A
+  const handleAlgoAChange = algo => {
+    setAlgoA(algo)
+    setGridA(reduxGrid.map(r => r.map(c => ({ ...c }))))
+    setStepsA([])
+  }
+
+  // Comparison-mode Algorithm B change: reset only grid B
+  const handleAlgoBChange = algo => {
+    setAlgoB(algo)
+    setGridB(reduxGrid.map(r => r.map(c => ({ ...c }))))
+    setStepsB([])
+  }
 
   useEffect(() => {
     if (compareMode) {
@@ -89,33 +107,26 @@ function App() {
       clearInterval(intervalRef.current)
       intervalRef.current = setInterval(() => {
         setStepIndex(idx => {
-          const next = idx
-          if (next >= stepsA.length && next >= stepsB.length) {
+          if (idx >= stepsA.length && idx >= stepsB.length) {
             clearInterval(intervalRef.current)
             setIsPlayingComp(false)
-            return next
+            return idx
           }
-          const sA = stepsA[next]
-          if (sA) {
-            setGridA(prev => {
-              const g = prev.map(r => r.map(c => ({ ...c })))
-              const { row, col } = sA.node
-              if (sA.isPath) g[row][col].isPath = true
-              else           g[row][col].isVisited = true
-              return g
-            })
+          const applyStep = (steps, setGrid) => {
+            const s = steps[idx]
+            if (s) {
+              setGrid(prev => {
+                const g = prev.map(r => r.map(c => ({ ...c })))
+                const { row, col } = s.node
+                if (s.isPath) g[row][col].isPath = true
+                else           g[row][col].isVisited = true
+                return g
+              })
+            }
           }
-          const sB = stepsB[next]
-          if (sB) {
-            setGridB(prev => {
-              const g = prev.map(r => r.map(c => ({ ...c })))
-              const { row, col } = sB.node
-              if (sB.isPath) g[row][col].isPath = true
-              else           g[row][col].isVisited = true
-              return g
-            })
-          }
-          return next + 1
+          applyStep(stepsA, setGridA)
+          applyStep(stepsB, setGridB)
+          return idx + 1
         })
       }, computeAnimationDelay(speed))
     } else {
@@ -127,10 +138,10 @@ function App() {
   const handleTogglePlay = () => {
     if (compareMode) {
       if (stepsA.length === 0 && stepsB.length === 0) {
-        const { grid: gA, steps: sA } = runAlgo(algoA, reduxGrid)
-        const { grid: gB, steps: sB } = runAlgo(algoB, reduxGrid)
-        setGridA(gA); setStepsA(sA)
-        setGridB(gB); setStepsB(sB)
+        const a = runAlgo(algoA, reduxGrid)
+        const b = runAlgo(algoB, reduxGrid)
+        setGridA(a.grid); setStepsA(a.steps)
+        setGridB(b.grid); setStepsB(b.steps)
         setStepIndex(0)
       }
       setIsPlayingComp(p => !p)
@@ -142,22 +153,21 @@ function App() {
   const handleStep = () => {
     if (compareMode) {
       if (stepsA.length === 0 && stepsB.length === 0) {
-        const { grid: gA, steps: sA } = runAlgo(algoA, reduxGrid)
-        const { grid: gB, steps: sB } = runAlgo(algoB, reduxGrid)
-        setGridA(gA); setStepsA(sA)
-        setGridB(gB); setStepsB(sB)
+        const a = runAlgo(algoA, reduxGrid)
+        const b = runAlgo(algoB, reduxGrid)
+        setGridA(a.grid); setStepsA(a.steps)
+        setGridB(b.grid); setStepsB(b.steps)
         setStepIndex(0)
       }
       clearInterval(intervalRef.current)
       setIsPlayingComp(false)
       setStepIndex(idx => {
-        const prev = idx
         ;[stepsA, stepsB].forEach((steps, i) => {
-          const s = steps[prev]
           const setGrid = i === 0 ? setGridA : setGridB
+          const s = steps[idx]
           if (s) {
-            setGrid(prevG => {
-              const g = prevG.map(r => r.map(c => ({ ...c })))
+            setGrid(prev => {
+              const g = prev.map(r => r.map(c => ({ ...c })))
               const { row, col } = s.node
               if (s.isPath) g[row][col].isPath = true
               else           g[row][col].isVisited = true
@@ -165,7 +175,7 @@ function App() {
             })
           }
         })
-        return prev + 1
+        return idx + 1
       })
     } else {
       dispatch(stepOnce())
@@ -177,7 +187,7 @@ function App() {
     const delay = computeAnimationDelay(speed)
     if (compareMode) {
       handleStep()
-      stepHoldRef.current = setInterval(() => handleStep(), delay)
+      stepHoldRef.current = setInterval(handleStep, delay)
     } else {
       dispatch(stepOnce())
       stepHoldRef.current = setInterval(() => dispatch(stepOnce()), delay)
@@ -196,8 +206,8 @@ function App() {
         const prev = idx - 1
         if (prev < 0) return 0
         ;[stepsA, stepsB].forEach((steps, i) => {
-          const s = steps[prev]
           const setGrid = i === 0 ? setGridA : setGridB
+          const s = steps[prev]
           if (s) {
             setGrid(prevG => {
               const g = prevG.map(r => r.map(c => ({ ...c })))
@@ -220,7 +230,7 @@ function App() {
     const delay = computeAnimationDelay(speed)
     if (compareMode) {
       handleBack()
-      backHoldRef.current = setInterval(() => handleBack(), delay)
+      backHoldRef.current = setInterval(handleBack, delay)
     } else {
       dispatch(back())
       backHoldRef.current = setInterval(() => dispatch(back()), delay)
@@ -281,11 +291,11 @@ function App() {
         speed={speed}
         statistics={statistics}
         selectedAlgorithm={selectedAlgorithm}
-        onAlgorithmChange={algo => dispatch(setAlgorithm(algo))}
+        onAlgorithmChange={handleSingleAlgoChange}
         selectedAlgorithmA={algoA}
         selectedAlgorithmB={algoB}
-        onAlgorithmChangeA={setAlgoA}
-        onAlgorithmChangeB={setAlgoB}
+        onAlgorithmChangeA={handleAlgoAChange}
+        onAlgorithmChangeB={handleAlgoBChange}
       />
 
       <button
@@ -323,7 +333,7 @@ function App() {
               <div className="stats-panel">
                 <span className="visited">Visited: {visitedB}</span>
                 <span className="path">Path: {pathB}</span>
-                </div>
+              </div>
             </div>
           </div>
         </>
