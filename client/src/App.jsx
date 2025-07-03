@@ -1,7 +1,7 @@
 /* File: src/App.jsx
  *
- * Reset only the corresponding grid’s path when its algorithm changes
- * in comparison mode, and still reset path on single-mode algorithm change.
+ * Position InfoPanel to the left of the grid in single mode by
+ * swapping their order inside .main-container.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -71,20 +71,15 @@ function App() {
   const stepHoldRef  = useRef(null)
   const backHoldRef  = useRef(null)
 
-  // Single-mode algorithm change: set and reset path
   const handleSingleAlgoChange = algo => {
     dispatch(setAlgorithm(algo))
     dispatch(resetPathThunk())
   }
-
-  // Comparison-mode Algorithm A change: reset only grid A
   const handleAlgoAChange = algo => {
     setAlgoA(algo)
     setGridA(reduxGrid.map(r => r.map(c => ({ ...c }))))
     setStepsA([])
   }
-
-  // Comparison-mode Algorithm B change: reset only grid B
   const handleAlgoBChange = algo => {
     setAlgoB(algo)
     setGridB(reduxGrid.map(r => r.map(c => ({ ...c }))))
@@ -339,9 +334,11 @@ function App() {
         </>
       ) : (
         <>
-          <InfoPanel selectedAlgorithm={selectedAlgorithm} />
-          <div className="grid-wrapper">
-            <Grid grid={reduxGrid} showControls={true} />
+          <div className="main-container">
+            <InfoPanel selectedAlgorithm={selectedAlgorithm} />
+            <div className="grid-wrapper">
+              <Grid grid={reduxGrid} showControls={true} />
+            </div>
           </div>
           <Footer
             visitedNodes={statistics.visitedNodes}
