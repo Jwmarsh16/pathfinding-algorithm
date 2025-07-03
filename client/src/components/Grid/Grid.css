@@ -1,60 +1,37 @@
-/* src/components/Grid/Grid.css */
+/* File: src/components/Grid/Grid.css */
 
 .visualizer-canvas {
   display: grid;
-  /* 50 columns, each 1fr but no smaller than 16px */
   grid-template-columns: repeat(50, minmax(16px, 1fr));
-  /* ensure each row matches the column size */
   grid-auto-rows: minmax(16px, 1fr);
   gap: 1px;
-
-  /* fill wrapper but respect its max-width */
   width: 100%;
   box-sizing: border-box;
-
-  background-color: #f0f0f0;
+  background-color: var(--grid-bg);
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--node-border);
+  border-radius: 8px;
 }
 
 .grid-row {
   display: contents;
 }
 
-.grid-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
-
-  /* constrain overall grid width */
-  width: 90%;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-/* In comparison mode, align both grids to the top */
-.grid-wrapper.compare {
-  align-items: flex-start;
-}
-
 .node {
-  /* square cells: height matches width */
   width: 100%;
   aspect-ratio: 1 / 1;
-  border: 1px solid #ddd;
-  background-color: white;
-  transition: background-color 0.3s ease;
+  border: 1px solid var(--node-border);
+  background-color: var(--node-bg);
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
 }
 
-.node-wall    { background-color: black;      }
-.node-start   { background-color: green;      }
-.node-end     { background-color: red;        }
-.node-visited { background-color: lightblue;  }
-.node-path    { background-color: yellow;     }
+.node-wall    { background-color: var(--node-wall-bg); }
+.node-start   { background-color: var(--accent-color); }
+.node-end     { background-color: var(--primary-color); }
+.node-visited { background-color: var(--node-visited-bg); }
+.node-path    { background-color: var(--node-path-bg); }
 
 .node:hover {
   cursor: pointer;
-  background-color: lightgray;
+  box-shadow: 0 0 10px var(--accent-color);
 }

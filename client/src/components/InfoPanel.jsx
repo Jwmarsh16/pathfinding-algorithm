@@ -1,3 +1,5 @@
+// src/components/InfoPanel.jsx
+
 import React from 'react'
 import './InfoPanel.css'
 
