@@ -3,6 +3,7 @@
  * Add smooth transitions on background, border, box-shadow, and color
  * so theme changes animate across the control panel.
  * Integrate Help button into the right group, pushing it to the far right.
+ * Add a custom arrow icon to the algorithm dropdown for better affordance.
  */
 
 /* Use inline-grid to shrink-wrap first row (left+center),
@@ -65,7 +66,7 @@
 
 /* Algorithm select dropdowns */
 .control-panel__left select {
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem; /* extra right padding for arrow */
   background-color: var(--surface-color);
   color: var(--primary-color);
   border: 1px solid var(--accent-color);
@@ -78,6 +79,12 @@
               border-color 0.3s ease,
               box-shadow 0.3s ease;
   appearance: none;
+
+  /* Custom down-arrow SVG tinted to accent-color */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width='10'%20height='7'%20viewBox='0%200%2010%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20fill='%2300ff6a'%20d='M0%200l5%207l5-7H0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.65rem;
 }
 
 /* Dropdown options */
@@ -172,9 +179,8 @@
   box-shadow: 0 0 8px var(--primary-color);
 }
 
-/* Inputs & selects blend */
-.control-panel input,
-.control-panel select {
+/* Inputs blend (exclude select so custom background-image persists) */
+.control-panel input {
   background: transparent;
   color: var(--text-color);
 }
