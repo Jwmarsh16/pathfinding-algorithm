@@ -144,6 +144,8 @@ footer {
   display: flex;
   gap: 1rem;
   margin: 0rem 0;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .info-panel-half {

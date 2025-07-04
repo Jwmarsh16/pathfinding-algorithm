@@ -1,10 +1,11 @@
 /* File: src/components/Header.css
  *
- * Styles for Header: layout, nav links, and theme toggle button
- * with smooth transitions for theme changes.
+ * Style the header container and center the title text while
+ * preserving the nav and toggle button alignment.
  */
 
 .header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,8 +16,11 @@
 }
 
 .header h1 {
-  font-size: 1.5rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   margin: 0;
+  font-size: 1.5rem;
 }
 
 .header nav {
