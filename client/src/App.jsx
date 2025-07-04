@@ -1,7 +1,7 @@
 /* File: src/App.jsx
  *
- * Position InfoPanel to the left of the grid in single mode by
- * swapping their order inside .main-container.
+ * Pass down onHelpClick to ControlPanel and remove standalone
+ * Help button since it is now integrated into the panel.
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -291,16 +291,8 @@ function App() {
         selectedAlgorithmB={algoB}
         onAlgorithmChangeA={handleAlgoAChange}
         onAlgorithmChangeB={handleAlgoBChange}
+        onHelpClick={() => setHelpOpen(true)}
       />
-
-      <button
-        type="button"
-        className="help-button"
-        onClick={() => setHelpOpen(true)}
-        style={{ margin: '0.5rem', padding: '0.5rem 1rem' }}
-      >
-        Help
-      </button>
 
       {compareMode ? (
         <>

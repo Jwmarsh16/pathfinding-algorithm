@@ -1,3 +1,5 @@
+/* File: src/components/Footer.jsx */
+
 function Footer({ pathLength, visitedNodes, executionTime }) {
     return (
       <footer className="footer">

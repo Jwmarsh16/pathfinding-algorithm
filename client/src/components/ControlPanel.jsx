@@ -1,9 +1,7 @@
-// src/components/ControlPanel.jsx
-/**
- * File: src/components/ControlPanel.jsx
+/* File: src/components/ControlPanel.jsx
  *
- * Adds a modifier class when in comparison mode so the CSS can target
- * .control-panel--compare to adjust wrapping/layout.
+ * Integrate the Help button into the control panel’s right group,
+ * so it appears on the bottom-right alongside the speed slider.
  */
 
 import React from 'react'
@@ -32,9 +30,9 @@ function ControlPanel({
   selectedAlgorithmA,
   selectedAlgorithmB,
   onAlgorithmChangeA,
-  onAlgorithmChangeB
+  onAlgorithmChangeB,
+  onHelpClick
 }) {
-  // Add the modifier class when compareMode is true
   const panelClass = compareMode
     ? 'control-panel control-panel--compare'
     : 'control-panel'
@@ -79,9 +77,7 @@ function ControlPanel({
           </>
         ) : (
           <>
-            <label className="control-panel__dropdown" htmlFor="algo-select">
-              Algorithm
-            </label>
+            <label htmlFor="algo-select">Algorithm</label>
             <select
               id="algo-select"
               value={selectedAlgorithm}
@@ -128,7 +124,7 @@ function ControlPanel({
         </button>
       </div>
 
-      {/* Right group: Speed slider & Stats */}
+      {/* Right group: Speed slider, Stats, Help */}
       <div className="control-panel__right">
         <div className="control-panel__slider">
           <input
@@ -145,6 +141,14 @@ function ControlPanel({
           <span>Visited: {statistics.visitedNodes}</span>
           <span>Path: {statistics.pathLength ?? '–'}</span>
         </div>
+        <button
+          type="button"
+          className="help-button"
+          onClick={onHelpClick}
+          aria-label="Open help"
+        >
+          Help
+        </button>
       </div>
     </div>
   )
