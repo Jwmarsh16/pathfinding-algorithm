@@ -88,7 +88,7 @@ header {
   font-size: 1.25rem;
   font-weight: 600;
 }
-*/
+
 footer {
   margin-top: auto;
   padding: 1rem;
@@ -97,7 +97,7 @@ footer {
   width: 100%;
   text-align: center;
   color: var(--text-secondary);
-}
+}*/
 
 /* ─── No-Path Banner ───────────────────────────────────────────────────── */
 .no-path-banner {

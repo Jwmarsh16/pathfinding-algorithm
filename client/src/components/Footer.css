@@ -1,0 +1,59 @@
+/* File: src/components/Footer.css
+ *
+ * Enhanced footer styling: flex layout, glassmorphic card,
+ * subtle shadow, rounded corners, and theme-aware transitions.
+ */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  margin-top: 2rem;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(var(--backdrop-blur));
+  border-top: 1px solid var(--primary-color);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+.footer__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer__stat {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.footer__stat strong {
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+.footer__credit {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer__stats {
+    justify-content: center;
+  }
+  .footer__credit {
+    margin-top: 0.5rem;
+  }
+}
